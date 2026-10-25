@@ -535,7 +535,8 @@
       .furn-clock { width: 14px; }
       .furn-plant { left: 82px; width: 28px; }
       .furn-coffee { width: 120px; height: auto; }
-      .progress { top: 96px; bottom: 66px; max-height: none; }
+      /* Office only: mobile sprite 96px + tag + ~7px gap — was bottom:66px → overlapped dolls (Look t882u). Meetings keep their own calc below. */
+      .room:not(.meeting) .progress { top: 96px; bottom: 128px; max-height: none; }
 
       .room.meeting { min-height: 560px; }
       .room.meeting .progress { height: 190px; bottom: auto; }
