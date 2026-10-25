@@ -438,34 +438,37 @@
       width: min(520px, 88%);
       height: 230px;
       bottom: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 2px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
     .meeting-vignette {
       max-width: 100%;
-      max-height: 200px;
+      max-height: 210px;
       width: auto;
       height: auto;
       object-fit: contain;
       image-rendering: auto;
       filter: drop-shadow(1px 2px 0 rgba(0,0,0,.28));
       display: block;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
-    .meet-tags {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px 8px;
-      max-width: 100%;
-    }
-    .meet-tags .sprite-tag {
-      margin-top: 0;
-      font-size: 0.52rem;
-      max-width: none;
-      z-index: 7;
+    /* Name labels beside each head (percent of stage) */
+    .meet-name {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      font-size: 0.5rem;
+      line-height: 1.1;
+      color: #0f172a;
+      background: rgba(255,255,255,.82);
+      border-radius: 4px;
+      padding: 1px 4px;
+      white-space: nowrap;
+      z-index: 8;
+      pointer-events: none;
+      box-shadow: 0 1px 0 rgba(0,0,0,.12);
     }
     .status.meeting {
       background: #c4b5fd;
@@ -554,8 +557,8 @@
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat' },
-            { name: '決策官', seat: 'decision-seat' }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 34, top: 12 } },
+            { name: '決策官', seat: 'decision-seat', tag: { left: 62, top: 10 } }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -567,10 +570,10 @@
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat' },
-            { name: '藍圖官', seat: 'blueprint-seat' },
-            { name: '鑄造使', seat: 'forge-seat' },
-            { name: '文案官', seat: 'copywriter-seat' }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 28, top: 8 } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 58, top: 6 } },
+            { name: '鑄造使', seat: 'forge-seat', tag: { left: 30, top: 58 } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 62, top: 56 } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -580,9 +583,9 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat' },
-            { name: '藍圖官', seat: 'blueprint-seat' },
-            { name: '文案官', seat: 'copywriter-seat' }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 10 } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 6 } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 72, top: 10 } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
@@ -590,9 +593,9 @@
     };
 
     const FURN_V = 'furn29';
-    const SPRITE_V = 'meet10';
+    const SPRITE_V = 'meet11';
     const SEAT_V = 'seat10';
-    const VIGNETTE_V = 'vig2';
+    const VIGNETTE_V = 'vig3';
 
 
     function checker(tint) {
@@ -663,14 +666,17 @@
     function meetingRoomHtml(m) {
       const { back, front } = splitSeats(m.members);
       const names = m.members.map(x => x.name).join('、');
-      const tags = m.members.map(x => `<span class="sprite-tag">${x.name}</span>`).join('');
       let stage;
       if (m.vignette) {
-        /* One composed vignette: people face table center, coherent scale */
+        /* One composed vignette + HTML name labels near each head */
+        const nameTags = m.members.map(mem => {
+          const t = mem.tag || { left: 50, top: 8 };
+          return `<span class="meet-name" style="left:${t.left}%;top:${t.top}%;">${mem.name}</span>`;
+        }).join('');
         stage = `
           <div class="meeting-stage vignette-mode" aria-hidden="true">
             <img class="meeting-vignette" src="pixel-assets/${m.vignette}?v=${VIGNETTE_V}" alt="" />
-            <div class="meet-tags">${tags}</div>
+            ${nameTags}
           </div>`;
       } else {
         const backLefts = seatLeftPercents(back.length);
