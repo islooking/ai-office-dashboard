@@ -63,7 +63,7 @@
       border-top: none;
       border-radius: 2px;
       overflow: visible;
-      min-height: 300px;
+      min-height: 320px;
       cursor: pointer;
       transition: transform .12s ease, box-shadow .12s ease;
       box-shadow:
@@ -207,7 +207,7 @@
       left: 4px;
       bottom: 4px;
       width: 118px;
-      z-index: 2;
+      z-index: 4;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -240,12 +240,13 @@
     }
     .progress {
       position: absolute;
-      top: 42%;
+      top: 58px; /* 頂牆＋名牌之下，向上拍齊 */
       left: 8px;
       right: 8px;
       bottom: auto;
-      max-height: 46%;
-      transform: translateY(-20%);
+      /* 底部預留公仔區，進度板唔可伸入 */
+      max-height: calc(100% - 58px - 148px);
+      transform: none;
       z-index: 3;
       background: rgba(15,23,42,.52);
       color: #f1f5f9;
@@ -256,6 +257,10 @@
       border: 1px solid rgba(255,255,255,.14);
       overflow: auto;
       backdrop-filter: blur(0.5px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
     }
     .progress .prog-head {
       font-size: 0.62rem;
@@ -284,7 +289,7 @@
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
     @media (max-width: 720px) {
-      .room { min-height: 280px; }
+      .room { min-height: 300px; }
       .desk-zone { width: 100px; }
       .sprite { width: 96px; }
       .progress { font-size: 0.66rem; }
@@ -296,7 +301,7 @@
     }
     @media (max-width: 480px) {
       .campus { grid-template-columns: 1fr; }
-      .room { min-height: 260px; }
+      .room { min-height: 280px; }
     }
   </style>
 </head>
