@@ -469,7 +469,9 @@
     .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode {
       transform: translateX(-50%) scale(0.5);
       transform-origin: bottom center;
-      bottom: 55px;
+      /* Move whole vignette (people+chairs+table) straight down: table legs = plant tops.
+         Plant top ≈ 55px; vignette PNG has ~23.6% empty below content → bottom ≈ 8px. */
+      bottom: 8px;
     }
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
@@ -509,7 +511,7 @@
       .room.meeting .progress { height: 190px; bottom: auto; }
       .meeting-stage { height: 150px; width: min(340px, 90%); }
       .meeting-stage.vignette-mode { width: min(360px, 90%); height: auto; bottom: 22px; }
-      .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode { bottom: 55px; }
+      .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode { bottom: 8px; }
       .meeting-vignette { width: 100%; height: auto; }
       .meeting-table { width: min(170px, 50%); }
       .seat { width: 64px; }
@@ -618,7 +620,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig8'; /* brand CSS scale half: layout-brand1 */
+    const VIGNETTE_V = 'vig8'; /* brand CSS scale half: layout-brand2 */
 
 
     function checker(tint) {
