@@ -318,7 +318,7 @@
 <body>
   <header>
     <h1>魔法學院｜AI 辦公室像素地圖</h1>
-    <p>每房一個 bot · 狀態同任務由 Dashboard_Tasks live 餵入 · 最多顯示 5 單</p>
+    <p>每房一個 bot · 狀態同任務由 Dashboard_Tasks live 餵入 · 可 scroll 睇晒所有任務</p>
     <div class="badge">LIVE · Sheet 驅動</div>
     <div class="links">
       <a href="ai-office-dashboard-prototype.html">卡片 Dashboard</a>
@@ -459,10 +459,7 @@
           statusEl.textContent = meta.label;
           statusEl.className = 'status ' + meta.cls;
 
-          const MAX = 5;
-          const shown = list.slice(-MAX).reverse();
-          const hiddenOpen = list.slice(0, Math.max(0, list.length - MAX))
-            .filter(r => ['pending', 'doing', 'hold'].includes(r.status)).length;
+          const shown = list.slice().reverse(); /* 唔限五行，房內 scroll 睇晒 */
           const linesHtml = shown.map(r => {
             const m = STATUS_META[r.status] || { label: r.status };
             let detail = '';
@@ -471,11 +468,6 @@
             else detail = r.task || r.summary || '';
             return `<div class="task-line"><span class="task-meta">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
           });
-          if (list.length > MAX) {
-            let note = `另有 ${list.length - MAX} 單較舊`;
-            if (hiddenOpen) note += `（未完成 ${hiddenOpen}）`;
-            linesHtml.push(`<div class="task-more">${note}</div>`);
-          }
           tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
         });
       } catch (e) {
