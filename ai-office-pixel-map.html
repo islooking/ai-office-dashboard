@@ -298,10 +298,10 @@
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
 
-    /* Meeting rooms: full width of 2 cols, conference layout */
+    /* Meeting rooms: full width; dialogue same height as offices; table zone below only */
     .room.meeting {
       grid-column: 1 / -1;
-      min-height: 460px;
+      min-height: 540px; /* taller so table zone fits under same-height dialogue */
       cursor: default;
     }
     .room.meeting:hover {
@@ -311,11 +311,13 @@
         0 4px 0 rgba(0,0,0,.25);
     }
     .room.meeting .progress {
-      /* Mid-room dialogue frame above table/sprites, same look as offices */
+      /* Same effective height as office progress (~226px at office min-height) */
       top: 80px;
-      bottom: 210px;
-      left: 12px;
-      right: 12px;
+      left: 8px;
+      right: 8px;
+      bottom: auto;
+      height: 226px;
+      z-index: 5; /* above stage — never underlap sprites/table */
     }
     .room.meeting .furn-plant-l {
       bottom: 6px;
@@ -333,51 +335,52 @@
       z-index: 1;
     }
     .meeting-stage {
+      /* Entirely in blank band under dialogue: room 540 - (80+226) ≈ 234px */
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 10px;
-      width: min(560px, 92%);
-      height: 196px;
-      z-index: 4;
+      bottom: 8px;
+      width: min(380px, 56%);
+      height: 168px;
+      z-index: 2;
       pointer-events: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      gap: 2px;
+      gap: 0;
     }
     .seat-row {
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      gap: 10px;
+      gap: 6px;
       width: 100%;
-      min-height: 78px;
+      min-height: 52px;
     }
     .seat {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 78px;
+      width: 54px;
     }
     .seat .sprite {
-      width: 72px;
+      width: 48px;
       max-width: 100%;
       height: auto;
     }
     .seat .sprite-tag {
       margin-top: -2px;
-      font-size: 0.55rem;
-      max-width: 74px;
+      font-size: 0.5rem;
+      max-width: 52px;
     }
     .meeting-table {
-      width: min(320px, 70%);
+      width: min(148px, 42%);
       height: auto;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: drop-shadow(1px 2px 0 rgba(0,0,0,.22));
-      margin: -6px 0 -2px;
+      margin: -4px 0 0;
       z-index: 2;
     }
     .status.meeting {
@@ -397,12 +400,12 @@
       .furn-coffee { width: 120px; height: auto; }
       .progress { top: 96px; bottom: 70px; max-height: none; }
 
-      .room.meeting { min-height: 420px; }
-      .room.meeting .progress { bottom: 180px; }
-      .meeting-stage { height: 170px; width: min(480px, 94%); }
-      .seat { width: 68px; }
-      .seat .sprite { width: 64px; }
-      .meeting-table { width: min(260px, 72%); }
+      .room.meeting { min-height: 500px; }
+      .room.meeting .progress { height: 200px; bottom: auto; }
+      .meeting-stage { height: 150px; width: min(340px, 70%); }
+      .seat { width: 48px; }
+      .seat .sprite { width: 42px; }
+      .meeting-table { width: min(120px, 40%); }
       .room.meeting .furn-plant-l,
       .room.meeting .furn-plant-r { width: 28px; }
     }
@@ -493,8 +496,8 @@
       ]
     };
 
-    const FURN_V = 'furn19';
-    const SPRITE_V = 'meet2';
+    const FURN_V = 'furn20';
+    const SPRITE_V = 'meet3';
 
 
     function checker(tint) {
