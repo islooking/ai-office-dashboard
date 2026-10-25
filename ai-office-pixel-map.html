@@ -222,9 +222,12 @@
       pointer-events: none;
     }
     .sprite {
-      width: 128px;
+      /* Visual size locked to 智子 footprint (skill); all desk PNGs share this box */
+      width: 118px;
       max-width: 100%;
-      height: auto;
+      height: 118px;
+      object-fit: contain;
+      object-position: bottom center;
       border: none;
       border-radius: 0;
       background: transparent;
@@ -301,7 +304,7 @@
     /* Meeting rooms: full width; dialogue same height as offices; table zone below only */
     .room.meeting {
       grid-column: 1 / -1;
-      min-height: 560px; /* taller so oval + seats fit under same-height dialogue */
+      min-height: 530px; /* dialogue ends ~306 + gap + half-scale vignette stage */
       cursor: default;
     }
     .room.meeting:hover {
@@ -351,8 +354,8 @@
       left: 50%;
       top: 48%;
       transform: translate(-50%, -50%);
-      /* ~2.4× one seated sprite — fits up to 3 along one edge */
-      width: min(200px, 48%);
+      /* Locked oval = furn-meeting-table-oval (磁鐵改靚 standard); half prior display */
+      width: min(100px, 36%);
       height: auto;
       z-index: 3;
       image-rendering: pixelated;
@@ -433,18 +436,20 @@
     .seat.front.face-in-left .sprite { transform: scaleX(1); }
 
 
-    /* Composed meeting vignette (preferred): one scene, face center, shared scale */
+    /* Meeting vignette: size standard = bottom room (Parsecreation 磁鐵改靚).
+       Table+people assets are half-padded; stage sized so group reads ~½ prior full-bleed. */
     .meeting-stage.vignette-mode {
-      width: min(520px, 88%);
-      height: 230px;
-      bottom: 8px;
+      /* bottom-room (磁鐵改靚) size standard — ~½ prior full-bleed people size */
+      width: min(400px, 76%);
+      height: 175px;
+      bottom: 12px;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
     }
     .meeting-vignette {
       max-width: 100%;
-      max-height: 210px;
+      max-height: 165px;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -455,14 +460,14 @@
       position: relative;
       z-index: 1;
     }
-    /* Name labels beside each head (percent of stage) */
+    /* Name labels in empty margin only — never overlap dialogue / sprites / table */
     .meet-name {
       position: absolute;
       transform: translate(-50%, -100%);
-      font-size: 0.5rem;
+      font-size: 0.48rem;
       line-height: 1.1;
       color: #0f172a;
-      background: rgba(255,255,255,.82);
+      background: rgba(255,255,255,.88);
       border-radius: 4px;
       padding: 1px 4px;
       white-space: nowrap;
@@ -478,7 +483,7 @@
     @media (max-width: 720px) {
       .room { min-height: 380px; }
       .desk-zone { width: 100px; }
-      .sprite { width: 96px; }
+      .sprite { width: 96px; height: 96px; }
       .progress { font-size: 0.66rem; }
       .furn-cabinet { height: 40px; width: auto; max-width: 60%; image-rendering: pixelated; }
       .furn-whiteboard { width: 36px; right: 34px; }
@@ -487,11 +492,11 @@
       .furn-coffee { width: 120px; height: auto; }
       .progress { top: 96px; bottom: 70px; max-height: none; }
 
-      .room.meeting { min-height: 520px; }
-      .room.meeting .progress { height: 200px; bottom: auto; }
-      .meeting-stage { height: 200px; width: min(380px, 92%); }
-      .meeting-stage.vignette-mode { height: 210px; width: min(420px, 94%); }
-      .meeting-vignette { max-height: 180px; }
+      .room.meeting { min-height: 500px; }
+      .room.meeting .progress { height: 190px; bottom: auto; }
+      .meeting-stage { height: 150px; width: min(340px, 90%); }
+      .meeting-stage.vignette-mode { height: 155px; width: min(360px, 90%); }
+      .meeting-vignette { max-height: 145px; }
       .meeting-table { width: min(170px, 50%); }
       .seat { width: 64px; }
       .seat .sprite { width: 60px; }
@@ -549,6 +554,7 @@
 
     /* Meeting rooms: same bot may appear in office + each meeting they belong to.
        seat: composed seated+chair sprite base (append -s / -n by side). */
+    /* Size standard = bottom room 磁鐵改靚. Oval table locked via MEETING_TABLE + vignette refs. */
     const MEETINGS = {
       top: [
         {
@@ -557,8 +563,9 @@
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 34, top: 12 } },
-            { name: '決策官', seat: 'decision-seat', tag: { left: 62, top: 10 } }
+            /* tags in vignette top empty margin (half-pad), clear of dialogue */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 38, top: 8 } },
+            { name: '決策官', seat: 'decision-seat', tag: { left: 62, top: 6 } }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -570,10 +577,11 @@
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 28, top: 8 } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 58, top: 6 } },
-            { name: '鑄造使', seat: 'forge-seat', tag: { left: 30, top: 58 } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 62, top: 56 } }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 36, top: 6 } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 64, top: 6 } },
+            /* near-side: side empty margins of half-padded vignette */
+            { name: '鑄造使', seat: 'forge-seat', tag: { left: 22, top: 70 } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 78, top: 70 } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -583,19 +591,21 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 10 } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 6 } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 72, top: 10 } }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 32, top: 6 } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 50, top: 4 } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 68, top: 6 } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
       ]
     };
 
-    const FURN_V = 'furn29';
-    const SPRITE_V = 'meet11';
-    const SEAT_V = 'seat10';
-    const VIGNETTE_V = 'vig3';
+    /* Locked meeting table asset — oval from bottom room 磁鐵改靚; do not swap shape. */
+    const MEETING_TABLE = 'furn-meeting-table-oval.png';
+    const FURN_V = 'furn30';
+    const SPRITE_V = 'meet12';
+    const SEAT_V = 'seat11';
+    const VIGNETTE_V = 'vig6';
 
 
     function checker(tint) {
@@ -637,10 +647,9 @@
     }
 
     function propFile(side, i) {
-      /* Prop faces the person: back row → lid toward far side; front → screen toward us */
-      const useLaptop = (i % 2 === 0);
-      if (side === 'back') return useLaptop ? 'laptop-back.png' : 'notebook-face-s.png';
-      return useLaptop ? 'laptop-face-n.png' : 'notebook-face-n.png';
+      /* Black laptops only — no notebooks (Look 2026-10-25). */
+      if (side === 'back') return 'laptop-back.png';
+      return 'laptop-face-n.png';
     }
 
     function seatHtml(m, side, leftPct, rowN, idx) {
@@ -690,7 +699,7 @@
         stage = `
           <div class="meeting-stage${solo}" aria-hidden="true">
             ${backSeats}
-            <img class="meeting-table" src="pixel-assets/furn-meeting-table-oval.png?v=${FURN_V}" alt="" />
+            <img class="meeting-table" src="pixel-assets/${MEETING_TABLE}?v=${FURN_V}" alt="" />
             ${props}
             ${frontSeats}
           </div>`;
