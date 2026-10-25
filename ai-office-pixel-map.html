@@ -316,10 +316,9 @@
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
 
-    /* Meeting rooms: full width; equal-gap progress like office (Look t885u/t886u/t887u).
-       Same --office-gap top & bottom as office top box. Phone+desktop share one formula;
-       mobile only overrides --stage-max / --stage-pct (like office only overrides --sprite-h).
-       Name anchors ≈ top 20% of square vignette; after scale(0.5) → 0.4 * stage width from bottom. */
+    /* Meeting rooms: full width; equal-gap like office top box (Look t885–t888).
+       CSS vars = fallback; syncMeetingGaps() measures room-name & .meet-name and sets
+       progress top/bottom so both gaps = --office-gap on phone + desktop. */
     .room.meeting {
       grid-column: 1 / -1;
       min-height: 640px; /* dialogue + gap + bottom-pinned square vignette */
@@ -940,9 +939,54 @@
       }
     }
 
+    /* Meeting progress: lock equal gaps from measured room-name & bot-name boxes
+       (same --office-gap as office top box). CSS bottom formula is fallback only. Look t885–t888. */
+    function meetingGapPx(room) {
+      const raw = getComputedStyle(room).getPropertyValue('--office-gap').trim();
+      const n = parseFloat(raw);
+      return Number.isFinite(n) ? n : 7;
+    }
+
+    function syncMeetingGaps() {
+      document.querySelectorAll('.room.meeting').forEach(room => {
+        const label = room.querySelector('.room-name');
+        const prog = room.querySelector('.progress');
+        const names = room.querySelectorAll('.meet-name');
+        if (!label || !prog || !names.length) return;
+        const gap = meetingGapPx(room);
+        const roomRect = room.getBoundingClientRect();
+        if (roomRect.height < 40) return;
+        const labelRect = label.getBoundingClientRect();
+        let nameTop = Infinity;
+        names.forEach(n => {
+          const r = n.getBoundingClientRect();
+          if (r.height > 0) nameTop = Math.min(nameTop, r.top);
+        });
+        if (!Number.isFinite(nameTop)) return;
+        const topPx = Math.max(0, labelRect.bottom - roomRect.top + gap);
+        const bottomPx = Math.max(0, roomRect.bottom - nameTop + gap);
+        /* Keep a usable progress band */
+        if (roomRect.height - topPx - bottomPx < 80) return;
+        prog.style.top = topPx + 'px';
+        prog.style.bottom = bottomPx + 'px';
+        prog.style.height = 'auto';
+      });
+    }
+
+    function scheduleMeetingGaps() {
+      syncMeetingGaps();
+      requestAnimationFrame(syncMeetingGaps);
+    }
+
     buildCampus();
+    scheduleMeetingGaps();
     loadSheet();
     setInterval(loadSheet, 60000);
+    window.addEventListener('resize', scheduleMeetingGaps);
+    document.querySelectorAll('.meeting-vignette').forEach(img => {
+      if (img.complete) return;
+      img.addEventListener('load', scheduleMeetingGaps, { once: true });
+    });
   </script>
 </body>
 </html>
