@@ -63,7 +63,7 @@
 </head>
 <body>
   <h1>AI 辦公室 — 純視覺 Dashboard</h1>
-  <p class="note">Prototype：點擊卡片會嘗試開啟對應 Grok Bot（deep link）。實際對話仍喺 Grok Bot App 入面進行。</p>
+  <p class="note">Prototype：卡片顯示 Sheet 最新狀態（未開始／進行中／暫停／完成／失敗）。點擊開啟對應 Grok Bot。</p>
 
   <!-- 簡單派任務表單範例 -->
   <div style="max-width: 600px; margin: 0 auto 30px auto; background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155;">
@@ -346,6 +346,39 @@
       }, 500);
     }
 
+    function parseCsv(text) {
+      const rows = [];
+      let row = [], cell = '', inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i], next = text[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') { cell += '"'; i++; }
+          else if (ch === '"') inQuotes = false;
+          else cell += ch;
+        } else if (ch === '"') inQuotes = true;
+        else if (ch === ',') { row.push(cell); cell = ''; }
+        else if (ch === '\n' || ch === '\r') {
+          if (ch === '\r' && next === '\n') i++;
+          row.push(cell); rows.push(row); row = []; cell = '';
+        } else cell += ch;
+      }
+      if (cell.length || row.length) { row.push(cell); rows.push(row); }
+      return rows.filter(r => r.some(c => String(c).trim() !== ''));
+    }
+
+    const STATUS_META = {
+      pending: { label: '未開始', color: '#fbbf24' },
+      doing:   { label: '進行中', color: '#38bdf8' },
+      hold:    { label: '暫停',   color: '#fb923c' },
+      done:    { label: '完成',   color: '#4ade80' },
+      error:   { label: '失敗',   color: '#f87171' }
+    };
+
+    function statusMeta(raw) {
+      const key = String(raw || '').trim().toLowerCase();
+      return STATUS_META[key] || { label: raw || '—', color: '#94a3b8' };
+    }
+
     async function loadSheet() {
       const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Dashboard_Tasks`;
@@ -354,26 +387,62 @@
         const res = await fetch(url);
         if (!res.ok) throw new Error('讀取失敗');
         const csv = await res.text();
-        const rows = csv.trim().split('\n').slice(1);
-        const latest = {};
-        rows.forEach(row => {
-          const cols = row.split(',').map(c => c.replace(/^"|"$/g, ''));
-          const bot = cols[3];
-          if (bot && !latest[bot]) latest[bot] = cols;
+        const table = parseCsv(csv);
+        if (table.length < 2) {
+          statusEls.forEach(el => { el.textContent = '暫無任務'; });
+          return;
+        }
+        const rows = table.slice(1).map(cols => ({
+          task: cols[1] || '',
+          bot: cols[3] || '',
+          status: String(cols[4] || '').trim().toLowerCase(),
+          summary: cols[5] || '',
+          notes: cols[8] || '',
+          updated: cols[7] || cols[0] || ''
+        })).filter(r => r.bot);
+
+        const byBot = {};
+        rows.forEach(r => {
+          if (!byBot[r.bot]) byBot[r.bot] = [];
+          byBot[r.bot].push(r);
         });
+
         statusEls.forEach(el => {
           const bot = el.dataset.bot;
-          const data = latest[bot];
-          if (data) {
-            const color = data[4] === 'done' ? '#4ade80' : data[4] === 'pending' ? '#fbbf24' : '#f87171';
-            el.innerHTML = `<span style="color:${color}">${data[4]||'—'}</span> · ${data[1]||''}`;
-          } else {
+          const list = byBot[bot] || [];
+          if (!list.length) {
             el.textContent = '暫無任務';
+            el.style.color = '#94a3b8';
+            return;
           }
+          // 最新一行（表係舊→新 append）
+          const latest = list[list.length - 1];
+          const open = list.filter(r => ['pending', 'doing', 'hold'].includes(r.status));
+          const meta = statusMeta(latest.status);
+          let line = `<span style="color:${meta.color}">${meta.label}</span>`;
+          if (latest.status === 'done' && latest.summary) {
+            line += ` · ${latest.summary}`;
+          } else if (latest.status === 'hold' && (latest.notes || latest.summary)) {
+            line += ` · ${latest.notes || latest.summary}`;
+          } else if (latest.task) {
+            line += ` · ${latest.task}`;
+          }
+          if (open.length > 1) {
+            const doing = open.filter(r => r.status === 'doing').length;
+            const hold = open.filter(r => r.status === 'hold').length;
+            const pending = open.filter(r => r.status === 'pending').length;
+            const bits = [];
+            if (doing) bits.push(`進行中 ${doing}`);
+            if (hold) bits.push(`暫停 ${hold}`);
+            if (pending) bits.push(`未開始 ${pending}`);
+            line += `<div style="margin-top:4px;color:#64748b;">未完成：${bits.join('｜')}</div>`;
+          }
+          el.innerHTML = line;
         });
       } catch (e) {
         statusEls.forEach(el => {
-          el.textContent = '讀取失敗';
+          el.textContent = '讀取失敗（請確認 Sheet 公開可檢視）';
+          el.style.color = '#f87171';
         });
       }
     }
