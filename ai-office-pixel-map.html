@@ -159,6 +159,49 @@
     .status.hold { background: #fb923c; color: #7c2d12; }
     .status.error { background: #f87171; color: #7f1d1d; }
     .status.idle { background: #94a3b8; color: #0f172a; }
+    .furn-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .furn {
+      position: absolute;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.2));
+    }
+    /* 四角統一擺位（每房一樣） */
+    .furn-cabinet {
+      top: 58px;
+      left: 6px;
+      width: 42px;
+      height: auto;
+    }
+    .furn-whiteboard {
+      top: 54px;
+      right: 46px;
+      width: 52px;
+      height: auto;
+    }
+    .furn-clock {
+      top: 50px;
+      right: 6px;
+      width: 32px;
+      height: auto;
+    }
+    .furn-plant {
+      bottom: 6px;
+      left: 118px;
+      width: 34px;
+      height: auto;
+    }
+    .furn-coffee {
+      bottom: 6px;
+      right: 6px;
+      width: 44px;
+      height: auto;
+    }
     .desk-zone {
       position: absolute;
       left: 4px;
@@ -245,6 +288,11 @@
       .desk-zone { width: 100px; }
       .sprite { width: 96px; }
       .progress { font-size: 0.66rem; }
+      .furn-cabinet { width: 34px; }
+      .furn-whiteboard { width: 42px; right: 40px; }
+      .furn-clock { width: 26px; }
+      .furn-plant { left: 96px; width: 28px; }
+      .furn-coffee { width: 36px; }
     }
     @media (max-width: 480px) {
       .campus { grid-template-columns: 1fr; }
@@ -332,6 +380,13 @@
           <div class="door" aria-hidden="true" title="門口">
             <span class="door-knob-l"></span>
             <span class="door-knob-r"></span>
+          </div>
+          <div class="furn-layer" aria-hidden="true">
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet.png?v=furn1" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn1" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn1" alt="" />
+            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn1" alt="" />
+            <img class="furn furn-coffee" src="pixel-assets/furn-coffee.png?v=furn1" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
