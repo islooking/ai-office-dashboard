@@ -493,8 +493,27 @@
       ]
     };
 
-    const FURN_V = 'furn18';
-    const SPRITE_V = 'meet1';
+    const FURN_V = 'furn19';
+    const SPRITE_V = 'meet2';
+
+
+    function checker(tint) {
+      return `background-color:${tint};background-image:linear-gradient(45deg,rgba(255,255,255,.22) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.22) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.22) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.22) 75%);background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0;`;
+    }
+
+    function parseCsvLine(line) {
+      const out = []; let cur = ''; let q = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') {
+          if (q && line[i + 1] === '"') { cur += '"'; i++; }
+          else q = !q;
+        } else if (c === ',' && !q) { out.push(cur); cur = ''; }
+        else cur += c;
+      }
+      out.push(cur);
+      return out;
+    }
 
     function seatHtml(m) {
       return `<div class="seat"><img class="sprite" src="pixel-assets/${m.sprite}?v=${SPRITE_V}" alt="${m.name}" /><span class="sprite-tag">${m.name}</span></div>`;
