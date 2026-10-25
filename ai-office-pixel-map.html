@@ -163,7 +163,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      z-index: 1;
+      z-index: 12; /* 牆傢俬最前，唔俾頂牆蓋住 */
     }
     .furn {
       position: absolute;
@@ -203,8 +203,8 @@
     .furn-coffee {
       bottom: 4px;
       right: 6px;
-      width: 56px; /* 直立大機 */
-      height: auto;
+      width: auto;
+      height: 128px; /* 同左邊公仔一樣高 */
       z-index: 2;
     }
     .desk-zone {
@@ -302,7 +302,7 @@
       .furn-whiteboard { width: 22px; right: 34px; }
       .furn-clock { width: 14px; }
       .furn-plant { left: 104px; width: 28px; }
-      .furn-coffee { width: 46px; }
+      .furn-coffee { height: 96px; width: auto; }
       .progress { top: 96px; max-height: calc(100% - 96px - 150px); }
     }
     @media (max-width: 480px) {
@@ -393,16 +393,16 @@
             <span class="door-knob-r"></span>
           </div>
           <div class="furn-layer" aria-hidden="true">
-            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-wide.png?v=furn2" alt="" />
-            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn2" alt="" />
-            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn2" alt="" />
-            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn2" alt="" />
-            <img class="furn furn-coffee" src="pixel-assets/furn-coffee-tall.png?v=furn2" alt="" />
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-wide.png?v=furn3" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn3" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn3" alt="" />
+            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn3" alt="" />
+            <img class="furn furn-coffee" src="pixel-assets/furn-coffee-tall.png?v=furn3" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
           <div class="desk-zone">
-            <img class="sprite" src="pixel-assets/${b.sprite}?v=size3" alt="${b.name}" />
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=size4" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
           <div class="progress" data-tasks>
