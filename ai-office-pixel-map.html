@@ -249,12 +249,24 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    /* Office progress: same gap top & bottom on all viewports (Look t883u).
+       gap = room-name bottom → progress top = progress bottom → sprite head (~7px).
+       Desktop = former top:80 / bottom:110 with sprite 118px. Meetings keep own rules. */
+    .room:not(.meeting) {
+      --office-gap: 7px;
+      --label-top: 56px;
+      --label-h: 17px;
+      --sprite-h: 118px;
+      --desk-bottom: 4px;
+      /* 118 + 4 - 19 + 7 = 110 */
+      --progress-bottom: calc(var(--sprite-h) + var(--desk-bottom) - 19px + var(--office-gap));
+    }
     .progress {
       position: absolute;
-      top: 80px; /* 名牌／狀態之下 */
+      top: 80px; /* default; office overrides below; meetings override later */
       left: 8px;
       right: 8px;
-      bottom: 110px; /* Look t875u: restore meet15 — just above character, no overlap */
+      bottom: 110px;
       max-height: none;
       height: auto;
       transform: none;
@@ -272,6 +284,10 @@
       flex-direction: column;
       justify-content: flex-start;
       align-items: stretch;
+    }
+    .room:not(.meeting) .progress {
+      top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
+      bottom: var(--progress-bottom);
     }
     .progress .prog-head {
       font-size: 0.62rem;
@@ -535,8 +551,9 @@
       .furn-clock { width: 14px; }
       .furn-plant { left: 82px; width: 28px; }
       .furn-coffee { width: 120px; height: auto; }
-      /* Office only: mobile sprite 96px + tag + ~7px gap — was bottom:66px → overlapped dolls (Look t882u). Meetings keep their own calc below. */
-      .room:not(.meeting) .progress { top: 96px; bottom: 128px; max-height: none; }
+      /* Same gap formula as desktop; only shrink --sprite-h to match .sprite 96px (Look t883u). */
+      .room:not(.meeting) { --sprite-h: 96px; } /* → bottom calc = 88px */
+      .room:not(.meeting) .progress { max-height: none; }
 
       .room.meeting { min-height: 560px; }
       .room.meeting .progress { height: 190px; bottom: auto; }
