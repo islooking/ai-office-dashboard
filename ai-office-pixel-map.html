@@ -473,6 +473,12 @@
          Plant top ≈ 55px; vignette PNG has ~23.6% empty below content → bottom ≈ 8px. */
       bottom: 8px;
     }
+    /* Brand progress stretches down to just above name tags (highest head tag ~23%).
+       Name anchor from room bottom ≈ stageBottom + (1-0.23)*0.5*stageW; + gap for tag. */
+    .room.meeting[data-meeting="parse-brand"] .progress {
+      height: auto;
+      bottom: calc(30px + 0.385 * min(400px, 76%));
+    }
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
       position: absolute;
@@ -526,6 +532,10 @@
       .meeting-stage { height: 150px; width: min(340px, 90%); }
       .meeting-stage.vignette-mode { width: min(360px, 90%); height: auto; bottom: 22px; }
       .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode { bottom: 8px; }
+      .room.meeting[data-meeting="parse-brand"] .progress {
+        height: auto;
+        bottom: calc(28px + 0.385 * min(360px, 90%));
+      }
       .meeting-vignette { width: 100%; height: auto; }
       .meeting-table { width: min(170px, 50%); }
       .seat { width: 64px; }
@@ -635,7 +645,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig8'; /* brand CSS scale half: layout-brand3 */
+    const VIGNETTE_V = 'vig8'; /* brand CSS scale half: layout-brand4 */
 
 
     function checker(tint) {
