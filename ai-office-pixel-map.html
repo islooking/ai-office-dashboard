@@ -462,8 +462,8 @@
           name: '抉擇塔',
           tint: '#ddd6fe',
           members: [
-            { name: '智子', sprite: 'zhizi-desk.png' },
-            { name: '決策官', sprite: 'decision-fox.png' }
+            { name: '智子', sprite: 'zhizi-meet.png' },
+            { name: '決策官', sprite: 'decision-fox-meet.png' }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -474,9 +474,9 @@
           name: 'Parsecreation 磁鐵改靚',
           tint: '#a5f3fc',
           members: [
-            { name: '藍圖官', sprite: 'blueprint-desk.png' },
-            { name: '鑄造使', sprite: 'forge-desk.png' },
-            { name: '文案官', sprite: 'copywriter-desk.png' }
+            { name: '藍圖官', sprite: 'blueprint-meet.png' },
+            { name: '鑄造使', sprite: 'forge-meet.png' },
+            { name: '文案官', sprite: 'copywriter-meet.png' }
           ],
           blurb: '會議室 · 群組 · 藍圖官、鑄造使、文案官'
         },
@@ -485,8 +485,8 @@
           name: 'Parsecreation 品牌網站',
           tint: '#fbcfe8',
           members: [
-            { name: '藍圖官', sprite: 'blueprint-desk.png' },
-            { name: '文案官', sprite: 'copywriter-desk.png' }
+            { name: '藍圖官', sprite: 'blueprint-meet.png' },
+            { name: '文案官', sprite: 'copywriter-meet.png' }
           ],
           blurb: '會議室 · 群組 · 藍圖官、文案官'
         }
@@ -494,7 +494,7 @@
     };
 
     const FURN_V = 'furn18';
-    const SPRITE_V = 'size18';
+    const SPRITE_V = 'meet1';
 
     function seatHtml(m) {
       return `<div class="seat"><img class="sprite" src="pixel-assets/${m.sprite}?v=${SPRITE_V}" alt="${m.name}" /><span class="sprite-tag">${m.name}</span></div>`;
