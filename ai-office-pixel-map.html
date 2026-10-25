@@ -301,7 +301,7 @@
     /* Meeting rooms: full width; dialogue same height as offices; table zone below only */
     .room.meeting {
       grid-column: 1 / -1;
-      min-height: 540px; /* taller so table zone fits under same-height dialogue */
+      min-height: 560px; /* taller so oval + chairs fit under same-height dialogue */
       cursor: default;
     }
     .room.meeting:hover {
@@ -335,13 +335,13 @@
       z-index: 1;
     }
     .meeting-stage {
-      /* Entirely in blank band under dialogue: room 540 - (80+226) ≈ 234px */
+      /* Entirely in blank band under dialogue: room 560 - (80+226) ≈ 254px */
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 8px;
-      width: min(380px, 56%);
-      height: 168px;
+      bottom: 10px;
+      width: min(520px, 78%);
+      height: 210px;
       z-index: 2;
       pointer-events: none;
       display: flex;
@@ -354,34 +354,94 @@
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      gap: 6px;
+      gap: 10px;
       width: 100%;
-      min-height: 52px;
+      position: relative;
+      z-index: 3;
     }
+    .seat-row-back { min-height: 72px; margin-bottom: -18px; z-index: 2; }
+    .seat-row-front { min-height: 68px; margin-top: -14px; z-index: 4; }
     .seat {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 54px;
+      width: 64px;
+    }
+    .seat .chair {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: auto;
+      z-index: 0;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25));
+      pointer-events: none;
+    }
+    .seat-row-front .seat .chair {
+      /* front chairs face the table (toward top); flip for variety */
+      transform: translateX(-50%) scaleY(0.92);
+      bottom: 12px;
+      opacity: 0.95;
     }
     .seat .sprite {
-      width: 48px;
+      position: relative;
+      z-index: 2;
+      width: 46px;
       max-width: 100%;
       height: auto;
+      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.2));
     }
     .seat .sprite-tag {
+      position: relative;
+      z-index: 3;
       margin-top: -2px;
       font-size: 0.5rem;
-      max-width: 52px;
+      max-width: 60px;
+    }
+    .table-zone {
+      position: relative;
+      width: min(280px, 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
+      margin: 0 auto;
     }
     .meeting-table {
-      width: min(148px, 42%);
+      width: 100%;
       height: auto;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      filter: drop-shadow(1px 2px 0 rgba(0,0,0,.22));
-      margin: -4px 0 0;
+      filter: drop-shadow(1px 2px 0 rgba(0,0,0,.28));
+      display: block;
+      z-index: 1;
+    }
+    .props-row {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: flex-end;
+      pointer-events: none;
       z-index: 2;
+    }
+    .props-row-back {
+      top: 18%;
+    }
+    .props-row-front {
+      bottom: 22%;
+    }
+    .props-row img {
+      width: 22px;
+      height: auto;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.2));
     }
     .status.meeting {
       background: #c4b5fd;
@@ -400,12 +460,14 @@
       .furn-coffee { width: 120px; height: auto; }
       .progress { top: 96px; bottom: 70px; max-height: none; }
 
-      .room.meeting { min-height: 500px; }
+      .room.meeting { min-height: 520px; }
       .room.meeting .progress { height: 200px; bottom: auto; }
-      .meeting-stage { height: 150px; width: min(340px, 70%); }
-      .seat { width: 48px; }
-      .seat .sprite { width: 42px; }
-      .meeting-table { width: min(120px, 40%); }
+      .meeting-stage { height: 180px; width: min(420px, 88%); }
+      .seat { width: 54px; }
+      .seat .sprite { width: 40px; }
+      .seat .chair { width: 30px; }
+      .table-zone { width: min(220px, 72%); }
+      .props-row img { width: 18px; }
       .room.meeting .furn-plant-l,
       .room.meeting .furn-plant-r { width: 28px; }
     }
@@ -498,8 +560,8 @@
       ]
     };
 
-    const FURN_V = 'furn21';
-    const SPRITE_V = 'meet4';
+    const FURN_V = 'furn22';
+    const SPRITE_V = 'meet5';
 
 
     function checker(tint) {
@@ -521,11 +583,20 @@
     }
 
     function seatHtml(m) {
-      return `<div class="seat"><img class="sprite" src="pixel-assets/${m.sprite}?v=${SPRITE_V}" alt="${m.name}" /><span class="sprite-tag">${m.name}</span></div>`;
+      return `<div class="seat">
+            <img class="chair" src="pixel-assets/furn-chair.png?v=${FURN_V}" alt="" />
+            <img class="sprite" src="pixel-assets/${m.sprite}?v=${SPRITE_V}" alt="${m.name}" />
+            <span class="sprite-tag">${m.name}</span>
+          </div>`;
+    }
+
+    function propHtml(i) {
+      const file = (i % 2 === 0) ? 'furn-laptop.png' : 'furn-notebook.png';
+      return `<img src="pixel-assets/${file}?v=${FURN_V}" alt="" />`;
     }
 
     function splitSeats(members) {
-      /* max 6; back row gets ceil, front gets floor — facing the table */
+      /* max 6; back row gets ceil, front gets floor — gather around ONE oval table */
       const n = Math.min(members.length, 6);
       const list = members.slice(0, n);
       const backN = Math.ceil(n / 2);
@@ -535,6 +606,8 @@
     function meetingRoomHtml(m) {
       const { back, front } = splitSeats(m.members);
       const names = m.members.map(x => x.name).join('、');
+      const backProps = back.map((_, i) => propHtml(i)).join('');
+      const frontProps = front.map((_, i) => propHtml(i + 1)).join('');
       return `
           <div class="top-wall" aria-hidden="true"></div>
           <div class="door" aria-hidden="true" title="門口">
@@ -558,7 +631,11 @@
           </div>
           <div class="meeting-stage" aria-hidden="true">
             <div class="seat-row seat-row-back">${back.map(seatHtml).join('')}</div>
-            <img class="meeting-table" src="pixel-assets/furn-meeting-table.png?v=${FURN_V}" alt="" />
+            <div class="table-zone">
+              <div class="props-row props-row-back">${backProps}</div>
+              <img class="meeting-table" src="pixel-assets/furn-meeting-table-oval.png?v=${FURN_V}" alt="" />
+              <div class="props-row props-row-front">${frontProps}</div>
+            </div>
             <div class="seat-row seat-row-front">${front.map(seatHtml).join('')}</div>
           </div>
         `;
