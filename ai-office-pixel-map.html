@@ -249,9 +249,9 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    /* Office progress: same gap top & bottom on all viewports (Look t883u).
+    /* Office progress: same gap top & bottom on all viewports (Look t883u/t885u).
        gap = room-name bottom → progress top = progress bottom → sprite head (~7px).
-       Desktop = former top:80 / bottom:110 with sprite 118px. Meetings keep own rules. */
+       Desktop = former top:80 / bottom:110 with sprite 118px. Meetings share --office-gap. */
     .room:not(.meeting) {
       --office-gap: 7px;
       --label-top: 56px;
@@ -316,11 +316,19 @@
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
 
-    /* Meeting rooms: full width; dialogue same height as offices; table zone below only */
+    /* Meeting rooms: full width; equal-gap progress like office (Look t885u/t886u).
+       top gap = --office-gap under room-name; bottom gap = --office-gap above bot names.
+       Name anchors ≈ top 20% of square vignette; after stage scale(0.5), offset from
+       stage bottom ≈ 0.4 * stage-w; tag sits --name-above-anchor above that anchor. */
     .room.meeting {
       grid-column: 1 / -1;
-      min-height: 640px; /* dialogue ~306 + gap + bottom-pinned square vignette (~½ people via pad) */
+      min-height: 640px; /* dialogue + gap + bottom-pinned square vignette */
       cursor: default;
+      --office-gap: 7px;
+      --label-top: 56px;
+      --label-h: 17px;
+      --stage-bottom: 8px;
+      --name-above-anchor: 16px; /* meet-name above ~top 20% head anchor (net 1× size) */
     }
     .room.meeting:hover {
       transform: none;
@@ -329,12 +337,13 @@
         0 4px 0 rgba(0,0,0,.25);
     }
     .room.meeting .progress {
-      /* Same effective height as office progress (~226px at office min-height) */
-      top: 80px;
+      top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
       left: 8px;
       right: 8px;
-      bottom: auto;
-      height: 226px;
+      height: auto;
+      bottom: calc(
+        var(--stage-bottom) + 0.4 * min(400px, 76%) + var(--name-above-anchor) + var(--office-gap)
+      );
       z-index: 5; /* above stage — never underlap sprites/table */
     }
     .room.meeting .furn-plant-l {
@@ -490,14 +499,8 @@
          Plant top ≈ 55px; vignette PNG has ~23.6% empty below content → bottom ≈ 8px. */
       bottom: 8px;
     }
-    /* Progress ends higher so names sit in gap between dialogue bottom and heads. */
-    .room.meeting[data-meeting="parse-brand"] .progress,
-    .room.meeting[data-meeting="decision-tower"] .progress,
-    .room.meeting[data-meeting="parse-magnet"] .progress {
-      height: auto;
-      /* Look t870u — expand progress down to just above names; no overlap. */
-      bottom: calc(32px + 0.40 * min(400px, 76%));
-    }
+    /* Meeting progress bottom: see .room.meeting .progress equal-gap formula. */
+
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
       position: absolute;
@@ -556,19 +559,17 @@
       .room:not(.meeting) .progress { max-height: none; }
 
       .room.meeting { min-height: 560px; }
-      .room.meeting .progress { height: 190px; bottom: auto; }
+      /* Same equal-gap as desktop; only stage width shrinks (Look t885u/t886u). */
+      .room.meeting .progress {
+        bottom: calc(
+          var(--stage-bottom) + 0.4 * min(360px, 90%) + var(--name-above-anchor) + var(--office-gap)
+        );
+      }
       .meeting-stage { height: 150px; width: min(340px, 90%); }
       .meeting-stage.vignette-mode { width: min(360px, 90%); height: auto; bottom: 22px; }
       .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode,
       .room.meeting[data-meeting="decision-tower"] .meeting-stage.vignette-mode,
       .room.meeting[data-meeting="parse-magnet"] .meeting-stage.vignette-mode { bottom: 8px; }
-      .room.meeting[data-meeting="parse-brand"] .progress,
-      .room.meeting[data-meeting="decision-tower"] .progress,
-      .room.meeting[data-meeting="parse-magnet"] .progress {
-        height: auto;
-        /* Look t870u — expand progress down to just above names; no overlap. */
-        bottom: calc(28px + 0.40 * min(360px, 90%));
-      }
       .meeting-vignette { width: 100%; height: auto; }
       .meeting-table { width: min(170px, 50%); }
       .seat { width: 64px; }
