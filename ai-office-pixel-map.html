@@ -304,7 +304,7 @@
     /* Meeting rooms: full width; dialogue same height as offices; table zone below only */
     .room.meeting {
       grid-column: 1 / -1;
-      min-height: 530px; /* dialogue ends ~306 + gap + half-scale vignette stage */
+      min-height: 640px; /* dialogue ~306 + gap + bottom-pinned square vignette (~½ people via pad) */
       cursor: default;
     }
     .room.meeting:hover {
@@ -436,45 +436,50 @@
     .seat.front.face-in-left .sprite { transform: scaleX(1); }
 
 
-    /* Meeting vignette: size standard = bottom room (Parsecreation 磁鐵改靚).
-       Table+people assets are half-padded; stage sized so group reads ~½ prior full-bleed. */
+    /* Meeting vignette: shared oval table at BOTTOM of frame; half-scale via pad.
+       Size standard = bottom room 磁鐵改靚. Tags % relative to vignette-wrap (= image). */
     .meeting-stage.vignette-mode {
-      /* bottom-room (磁鐵改靚) size standard — ~½ prior full-bleed people size */
-      width: min(400px, 76%);
-      height: 175px;
-      bottom: 12px;
+      width: min(320px, 72%);
+      height: auto;
+      bottom: 4px;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .vignette-wrap {
+      position: relative;
+      width: 100%;
+      line-height: 0;
     }
     .meeting-vignette {
-      max-width: 100%;
-      max-height: 165px;
-      width: auto;
+      width: 100%;
       height: auto;
-      object-fit: contain;
+      display: block;
       image-rendering: auto;
       filter: drop-shadow(1px 2px 0 rgba(0,0,0,.28));
-      display: block;
-      margin: 0 auto;
       position: relative;
       z-index: 1;
     }
-    /* Name labels in empty margin only — never overlap dialogue / sprites / table */
+    /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
       position: absolute;
-      transform: translate(-50%, -100%);
-      font-size: 0.48rem;
+      font-size: 0.46rem;
       line-height: 1.1;
       color: #0f172a;
-      background: rgba(255,255,255,.88);
-      border-radius: 4px;
-      padding: 1px 4px;
+      background: rgba(255,255,255,.9);
+      border-radius: 3px;
+      padding: 1px 3px;
       white-space: nowrap;
       z-index: 8;
       pointer-events: none;
       box-shadow: 0 1px 0 rgba(0,0,0,.12);
     }
+    .meet-name.side-center { transform: translate(-50%, -100%); }
+    .meet-name.side-right { transform: translate(-100%, -50%); } /* tag left of sprite */
+    .meet-name.side-left { transform: translate(0, -50%); } /* tag right of sprite */
     .status.meeting {
       background: #c4b5fd;
       color: #4c1d95;
@@ -492,11 +497,11 @@
       .furn-coffee { width: 120px; height: auto; }
       .progress { top: 96px; bottom: 70px; max-height: none; }
 
-      .room.meeting { min-height: 500px; }
+      .room.meeting { min-height: 560px; }
       .room.meeting .progress { height: 190px; bottom: auto; }
       .meeting-stage { height: 150px; width: min(340px, 90%); }
-      .meeting-stage.vignette-mode { height: 155px; width: min(360px, 90%); }
-      .meeting-vignette { max-height: 145px; }
+      .meeting-stage.vignette-mode { width: min(280px, 88%); height: auto; }
+      .meeting-vignette { width: 100%; height: auto; }
       .meeting-table { width: min(170px, 50%); }
       .seat { width: 64px; }
       .seat .sprite { width: 60px; }
@@ -554,7 +559,7 @@
 
     /* Meeting rooms: same bot may appear in office + each meeting they belong to.
        seat: composed seated+chair sprite base (append -s / -n by side). */
-    /* Size standard = bottom room 磁鐵改靚. Oval table locked via MEETING_TABLE + vignette refs. */
+    /* Size standard = bottom room 磁鐵改靚. Oval at frame bottom; MEETING_TABLE locked; tags beside sprites. */
     const MEETINGS = {
       top: [
         {
@@ -563,9 +568,9 @@
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
-            /* tags in vignette top empty margin (half-pad), clear of dialogue */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 38, top: 8 } },
-            { name: '決策官', seat: 'decision-seat', tag: { left: 62, top: 6 } }
+            /* tags tight beside head/shoulder (side: right=left-of-sprite, left=right-of-sprite) */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 30.9, top: 71.2, side: 'right' } },
+            { name: '決策官', seat: 'decision-seat', tag: { left: 68.7, top: 71.2, side: 'left' } }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -577,11 +582,10 @@
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 36, top: 6 } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 64, top: 6 } },
-            /* near-side: side empty margins of half-padded vignette */
-            { name: '鑄造使', seat: 'forge-seat', tag: { left: 22, top: 70 } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 78, top: 70 } }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 30.9, top: 66.2, side: 'right' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 68.7, top: 66.2, side: 'left' } },
+            { name: '鑄造使', seat: 'forge-seat', tag: { left: 30.8, top: 82.6, side: 'right' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 68.5, top: 82.6, side: 'left' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -591,9 +595,9 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 32, top: 6 } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 50, top: 4 } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 68, top: 6 } }
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 28.9, top: 71.2, side: 'right' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 50.0, top: 68.2, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 71.1, top: 71.2, side: 'left' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
@@ -602,10 +606,10 @@
 
     /* Locked meeting table asset — oval from bottom room 磁鐵改靚; do not swap shape. */
     const MEETING_TABLE = 'furn-meeting-table-oval.png';
-    const FURN_V = 'furn30';
-    const SPRITE_V = 'meet12';
-    const SEAT_V = 'seat11';
-    const VIGNETTE_V = 'vig6';
+    const FURN_V = 'furn31';
+    const SPRITE_V = 'meet13';
+    const SEAT_V = 'seat12';
+    const VIGNETTE_V = 'vig7';
 
 
     function checker(tint) {
@@ -677,15 +681,18 @@
       const names = m.members.map(x => x.name).join('、');
       let stage;
       if (m.vignette) {
-        /* One composed vignette + HTML name labels near each head */
+        /* One composed vignette + HTML name labels tight beside each head */
         const nameTags = m.members.map(mem => {
-          const t = mem.tag || { left: 50, top: 8 };
-          return `<span class="meet-name" style="left:${t.left}%;top:${t.top}%;">${mem.name}</span>`;
+          const t = mem.tag || { left: 50, top: 8, side: 'center' };
+          const side = t.side || 'center';
+          return `<span class="meet-name side-${side}" style="left:${t.left}%;top:${t.top}%;">${mem.name}</span>`;
         }).join('');
         stage = `
           <div class="meeting-stage vignette-mode" aria-hidden="true">
-            <img class="meeting-vignette" src="pixel-assets/${m.vignette}?v=${VIGNETTE_V}" alt="" />
-            ${nameTags}
+            <div class="vignette-wrap">
+              <img class="meeting-vignette" src="pixel-assets/${m.vignette}?v=${VIGNETTE_V}" alt="" />
+              ${nameTags}
+            </div>
           </div>`;
       } else {
         const backLefts = seatLeftPercents(back.length);
