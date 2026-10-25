@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>魔法學院｜AI 辦公室像素地圖</title>
   <style>
-    :root { --ink:#0f172a; --muted:#94a3b8; }
+    :root { --ink:#0f172a; --muted:#94a3b8; --wall:#64748b; --wall-light:#94a3b8; }
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -49,33 +49,79 @@
       background: repeating-linear-gradient(90deg, #94a3b8 0 8px, #64748b 8px 10px, #cbd5e1 10px 18px);
       border-radius: 2px; opacity: .55;
     }
+
+    /* Habbo / Kairosoft room: door top-center, desk bottom-left, big progress floor */
     .room {
       position: relative;
-      border: 3px solid #64748b;
-      border-radius: 6px;
+      border: 3px solid var(--wall);
+      border-top-width: 14px;
+      border-radius: 4px;
       overflow: hidden;
-      min-height: 248px;
+      min-height: 280px;
       cursor: pointer;
       transition: transform .12s ease, box-shadow .12s ease;
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.12);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
     }
     .room:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.2);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.25);
     }
-    .room-bar {
-      position: absolute; top: 8px; left: 8px; right: 8px;
-      display: flex; justify-content: space-between; align-items: center; gap: 6px; z-index: 2;
+
+    /* Door notch cut into the thick top wall */
+    .door {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 14px;
+      background: #1e293b;
+      border-left: 3px solid #475569;
+      border-right: 3px solid #475569;
+      border-bottom: 2px solid #334155;
+      z-index: 4;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.08);
     }
-    .room-title {
-      background: rgba(15,23,42,.82); color: #f8fafc;
-      font-size: 0.72rem; font-weight: 700; padding: 3px 7px; border-radius: 4px;
-      border: 1px solid rgba(255,255,255,.18); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      max-width: 68%;
+    .door::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 2px;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: #64748b;
+      border-radius: 1px;
     }
+
+    .room-name {
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      z-index: 3;
+      background: rgba(15,23,42,.78);
+      color: #f8fafc;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,.16);
+      max-width: calc(100% - 90px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .status {
-      font-size: 0.68rem; font-weight: 700; padding: 3px 7px; border-radius: 4px;
-      border: 1px solid rgba(0,0,0,.12); flex-shrink: 0;
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      z-index: 3;
+      font-size: 0.66rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,.12);
     }
     .status.doing { background: #38bdf8; color: #0c4a6e; }
     .status.done { background: #4ade80; color: #14532d; }
@@ -83,47 +129,104 @@
     .status.hold { background: #fb923c; color: #7c2d12; }
     .status.error { background: #f87171; color: #7f1d1d; }
     .status.idle { background: #94a3b8; color: #0f172a; }
+
+    /* Character + small desk in bottom-left, facing top-right */
+    .desk-zone {
+      position: absolute;
+      left: 6px;
+      bottom: 6px;
+      width: 108px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      pointer-events: none;
+    }
     .sprite {
-      position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%);
-      width: min(82%, 200px); border-radius: 8px;
-      filter: drop-shadow(0 6px 0 rgba(0,0,0,.12));
+      width: 100px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      image-rendering: auto;
+      filter: drop-shadow(2px 3px 0 rgba(0,0,0,.18));
+      display: block;
     }
-    .tasks {
-      position: absolute; left: 8px; right: 8px; bottom: 8px;
-      background: rgba(15,23,42,.78); color: #e2e8f0;
-      font-size: 0.68rem; line-height: 1.35; padding: 6px 8px;
-      border-radius: 4px; border: 1px solid rgba(255,255,255,.1);
-      z-index: 2; max-height: 78px; overflow: hidden;
-    }
-    .meeting {
-      grid-column: 1 / -1;
-      min-height: 220px;
-      border: 3px solid #64748b;
-      border-radius: 6px;
-      position: relative;
+    .sprite-tag {
+      margin-top: 2px;
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #0f172a;
+      background: rgba(255,255,255,.72);
+      padding: 1px 5px;
+      border-radius: 3px;
+      max-width: 100px;
       overflow: hidden;
-      background-color: #f5d0c5;
-      background-image:
-        linear-gradient(45deg, rgba(255,255,255,.22) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(255,255,255,.22) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.22) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.22) 75%);
-      background-size: 22px 22px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .meet-img {
-      display: block; width: min(92%, 720px); margin: 44px auto 16px;
-      border-radius: 10px; border: 2px solid rgba(15,23,42,.2);
+
+    /* Large open floor for latest progress — main content zone */
+    .progress {
+      position: absolute;
+      top: 32px;
+      left: 118px;
+      right: 8px;
+      bottom: 8px;
+      z-index: 2;
+      background: rgba(15,23,42,.72);
+      color: #e2e8f0;
+      font-size: 0.7rem;
+      line-height: 1.4;
+      padding: 8px 10px;
+      border-radius: 5px;
+      border: 1px solid rgba(255,255,255,.12);
+      overflow: auto;
+      backdrop-filter: blur(1px);
     }
+    .progress .prog-head {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .progress .task-line {
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(148,163,184,.15);
+    }
+    .progress .task-line:last-child { border-bottom: none; }
+    .progress .task-meta {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+    .progress .task-more {
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: 0.64rem;
+    }
+
     .note {
       max-width: 980px; margin: 0 auto 40px; padding: 0 16px;
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
-    @media (max-width: 1100px) { .campus { grid-template-columns: repeat(3, 1fr); } }
+
+    @media (max-width: 1100px) {
+      .campus { grid-template-columns: repeat(3, 1fr); }
+      .room { min-height: 270px; }
+    }
     @media (max-width: 720px) {
       .campus { grid-template-columns: 1fr 1fr; }
-      .room { min-height: 220px; }
+      .room { min-height: 260px; }
+      .desk-zone { width: 92px; }
+      .sprite { width: 88px; }
+      .progress { left: 100px; font-size: 0.66rem; }
     }
-    @media (max-width: 480px) { .campus { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+      .campus { grid-template-columns: 1fr; }
+      .room { min-height: 240px; }
+      .progress { left: 108px; }
+    }
   </style>
 </head>
 <body>
@@ -138,7 +241,7 @@
   </header>
 
   <div class="campus" id="campus" aria-label="像素辦公室全院地圖"></div>
-  <p class="note">點房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error），畫面顯示中文。</p>
+  <p class="note">點房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error），畫面顯示中文。會議室稍後再處理。</p>
 
   <script>
     const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
@@ -202,25 +305,21 @@
         el.style.cssText = checker(b.tint);
         el.onclick = () => { location.href = 'grokbot://app/v1/agent?id=' + b.id; };
         el.innerHTML = `
-          <div class="room-bar">
-            <span class="room-title">${b.wingLabel} · ${b.name}</span>
-            <span class="status idle" data-status>暫無</span>
+          <div class="door" aria-hidden="true" title="門口"></div>
+          <div class="room-name">${b.wingLabel} · ${b.name}</div>
+          <span class="status idle" data-status>暫無</span>
+          <div class="desk-zone">
+            <img class="sprite" src="pixel-assets/${b.sprite}" alt="${b.name}" />
+            <span class="sprite-tag">${b.name}</span>
           </div>
-          <img class="sprite" src="pixel-assets/${b.sprite}" alt="${b.name}" />
-          <div class="tasks" data-tasks>載入任務…</div>
+          <div class="progress" data-tasks>
+            <div class="prog-head">最新進度</div>
+            載入任務…
+          </div>
         `;
         root.appendChild(el);
       });
-      const meet = document.createElement('div');
-      meet.className = 'meeting';
-      meet.innerHTML = `
-        <div class="room-bar">
-          <span class="room-title">抉擇塔｜會議室</span>
-          <span class="status hold">待命</span>
-        </div>
-        <img class="meet-img" src="pixel-assets/meeting-zhizi-decision.jpg" alt="抉擇塔會議室" />
-      `;
-      root.appendChild(meet);
+      /* meeting-zhizi-decision: skipped per Look 2026-10-25 */
     }
 
     async function loadSheet() {
@@ -255,7 +354,7 @@
           if (!list.length) {
             statusEl.textContent = '暫無';
             statusEl.className = 'status idle';
-            tasksEl.textContent = '（暫無手上任務）';
+            tasksEl.innerHTML = '<div class="prog-head">最新進度</div>（暫無手上任務）';
             return;
           }
           const latest = list[list.length - 1];
@@ -273,18 +372,18 @@
             if (r.status === 'done' && r.summary) detail = r.summary;
             else if (r.status === 'hold' && (r.notes || r.summary)) detail = r.notes || r.summary;
             else detail = r.task || r.summary || '';
-            return `${m.label}${detail ? ' · ' + detail : ''}`;
+            return `<div class="task-line"><span class="task-meta">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
           });
           if (list.length > MAX) {
             let note = `另有 ${list.length - MAX} 單較舊`;
             if (hiddenOpen) note += `（未完成 ${hiddenOpen}）`;
-            linesHtml.push(note);
+            linesHtml.push(`<div class="task-more">${note}</div>`);
           }
-          tasksEl.innerHTML = linesHtml.join('<br/>');
+          tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
         });
       } catch (e) {
         document.querySelectorAll('[data-tasks]').forEach(el => {
-          el.textContent = '讀取失敗（請確認 Sheet 公開可檢視）';
+          el.innerHTML = '<div class="prog-head">最新進度</div>讀取失敗（請確認 Sheet 公開可檢視）';
         });
       }
     }
