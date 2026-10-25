@@ -463,19 +463,23 @@
       position: relative;
       z-index: 1;
     }
-    /* Look t843u: 品牌網站 only — scale original vignette ×0.5 (details unchanged), then pin
-       table legs to plant tops. Plant CSS: bottom 6px, width 34px, asset 67×96 → ~49px tall;
-       plant top ≈ 55px from room bottom. Do NOT remake PNG. */
-    .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode {
+    /* Look t863u/t864u: all three meetings — scale original vignette ×0.5 (details unchanged),
+       then pin table legs to plant tops. Plant CSS: bottom 6px, width 34px, asset 67×96 → ~49px tall;
+       plant top ≈ 55px from room bottom. Do NOT remake PNGs. ONLY CSS size/position. */
+    .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode,
+    .room.meeting[data-meeting="decision-tower"] .meeting-stage.vignette-mode,
+    .room.meeting[data-meeting="parse-magnet"] .meeting-stage.vignette-mode {
       transform: translateX(-50%) scale(0.5);
       transform-origin: bottom center;
       /* Move whole vignette (people+chairs+table) straight down: table legs = plant tops.
          Plant top ≈ 55px; vignette PNG has ~23.6% empty below content → bottom ≈ 8px. */
       bottom: 8px;
     }
-    /* Brand progress stretches down to just above name tags (highest head tag ~23%).
+    /* Progress stretches down to just above name tags (highest head tag ~23%).
        Name anchor from room bottom ≈ stageBottom + (1-0.23)*0.5*stageW; + gap for tag. */
-    .room.meeting[data-meeting="parse-brand"] .progress {
+    .room.meeting[data-meeting="parse-brand"] .progress,
+    .room.meeting[data-meeting="decision-tower"] .progress,
+    .room.meeting[data-meeting="parse-magnet"] .progress {
       height: auto;
       bottom: calc(30px + 0.385 * min(400px, 76%));
     }
@@ -496,17 +500,23 @@
     .meet-name.side-center { transform: translate(-50%, -100%); }
     .meet-name.side-right { transform: translate(-100%, -50%); } /* tag left of sprite */
     .meet-name.side-left { transform: translate(0, -50%); } /* tag right of sprite */
-    /* Brand room stage is scale(0.5) — counter-scale names so they match other rooms' meet-name size.
-       Facing-us sitters: tags sit just above head (not in empty top pad). */
-    .room.meeting[data-meeting="parse-brand"] .meet-name.side-center {
+    /* All three rooms stage is scale(0.5) — counter-scale names so they match office meet-name size.
+       Facing-us sitters: tags sit just above head (not in empty top pad). Look t863u/t864u. */
+    .room.meeting[data-meeting="parse-brand"] .meet-name.side-center,
+    .room.meeting[data-meeting="decision-tower"] .meet-name.side-center,
+    .room.meeting[data-meeting="parse-magnet"] .meet-name.side-center {
       transform: translate(-50%, -100%) scale(2);
       transform-origin: center bottom;
     }
-    .room.meeting[data-meeting="parse-brand"] .meet-name.side-left {
+    .room.meeting[data-meeting="parse-brand"] .meet-name.side-left,
+    .room.meeting[data-meeting="decision-tower"] .meet-name.side-left,
+    .room.meeting[data-meeting="parse-magnet"] .meet-name.side-left {
       transform: translate(0, -50%) scale(2);
       transform-origin: left center;
     }
-    .room.meeting[data-meeting="parse-brand"] .meet-name.side-right {
+    .room.meeting[data-meeting="parse-brand"] .meet-name.side-right,
+    .room.meeting[data-meeting="decision-tower"] .meet-name.side-right,
+    .room.meeting[data-meeting="parse-magnet"] .meet-name.side-right {
       transform: translate(-100%, -50%) scale(2);
       transform-origin: right center;
     }
@@ -531,8 +541,12 @@
       .room.meeting .progress { height: 190px; bottom: auto; }
       .meeting-stage { height: 150px; width: min(340px, 90%); }
       .meeting-stage.vignette-mode { width: min(360px, 90%); height: auto; bottom: 22px; }
-      .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode { bottom: 8px; }
-      .room.meeting[data-meeting="parse-brand"] .progress {
+      .room.meeting[data-meeting="parse-brand"] .meeting-stage.vignette-mode,
+      .room.meeting[data-meeting="decision-tower"] .meeting-stage.vignette-mode,
+      .room.meeting[data-meeting="parse-magnet"] .meeting-stage.vignette-mode { bottom: 8px; }
+      .room.meeting[data-meeting="parse-brand"] .progress,
+      .room.meeting[data-meeting="decision-tower"] .progress,
+      .room.meeting[data-meeting="parse-magnet"] .progress {
         height: auto;
         bottom: calc(28px + 0.385 * min(360px, 90%));
       }
@@ -645,7 +659,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig14'; /* clean oval only: sprite recompose v2+v4, old table layers gone */
+    const VIGNETTE_V = 'vig15'; /* Look t863u: all 3 meetings scale(0.5)+legs at plant tops */
 
 
     function checker(tint) {
