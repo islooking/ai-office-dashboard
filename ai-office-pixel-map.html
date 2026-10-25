@@ -89,11 +89,11 @@
     }
     .door {
       position: absolute;
-      top: 2px;
+      top: 4px;
       left: 50%;
       transform: translateX(-50%);
-      width: 52px;
-      height: 26px;
+      width: 44px;
+      height: 24px;
       z-index: 6;
       display: flex;
       gap: 2px;
@@ -123,8 +123,8 @@
       border-radius: 1px;
       z-index: 7;
     }
-    .door-knob-l { left: 20px; }
-    .door-knob-r { right: 20px; }
+    .door-knob-l { left: 16px; }
+    .door-knob-r { right: 16px; }
     .room-name {
       position: absolute;
       top: 34px;
@@ -159,26 +159,50 @@
     .status.hold { background: #fb923c; color: #7c2d12; }
     .status.error { background: #f87171; color: #7f1d1d; }
     .status.idle { background: #94a3b8; color: #0f172a; }
-    .floor-art {
+    .desk-zone {
       position: absolute;
-      inset: 28px 0 0 0;
-      width: 100%;
-      height: calc(100% - 28px);
-      object-fit: cover;
-      object-position: left bottom;
-      z-index: 1;
-      display: block;
+      left: 4px;
+      bottom: 4px;
+      width: 118px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       pointer-events: none;
+    }
+    .sprite {
+      width: 112px;
+      max-width: 100%;
+      height: auto;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
       image-rendering: auto;
+      display: block;
+      filter: drop-shadow(1px 2px 0 rgba(0,0,0,.15));
+    }
+    .sprite-tag {
+      margin-top: -2px;
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #0f172a;
+      background: rgba(255,255,255,.78);
+      padding: 1px 5px;
+      border-radius: 3px;
+      max-width: 110px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .progress {
       position: absolute;
       top: 58px;
+      left: 126px;
       right: 8px;
-      left: 42%;
-      bottom: 10px;
-      z-index: 3;
-      background: rgba(15,23,42,.52);
+      bottom: 8px;
+      z-index: 2;
+      background: rgba(15,23,42,.48);
       color: #f1f5f9;
       font-size: 0.7rem;
       line-height: 1.4;
@@ -216,17 +240,19 @@
     }
     @media (max-width: 1100px) {
       .campus { grid-template-columns: repeat(3, 1fr); }
-      .room { min-height: 300px; }
+      .room { min-height: 290px; }
     }
     @media (max-width: 720px) {
       .campus { grid-template-columns: 1fr 1fr; }
-      .room { min-height: 290px; }
-      .progress { left: 36%; font-size: 0.66rem; }
+      .room { min-height: 280px; }
+      .desk-zone { width: 100px; }
+      .sprite { width: 96px; }
+      .progress { left: 108px; font-size: 0.66rem; }
     }
     @media (max-width: 480px) {
       .campus { grid-template-columns: 1fr; }
-      .room { min-height: 280px; }
-      .progress { left: 32%; }
+      .room { min-height: 260px; }
+      .progress { left: 116px; }
     }
   </style>
 </head>
@@ -311,9 +337,12 @@
             <span class="door-knob-l"></span>
             <span class="door-knob-r"></span>
           </div>
-          <img class="floor-art" src="pixel-assets/${b.sprite}?v=fullroom1" alt="${b.name}" />
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
+          <div class="desk-zone">
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=restore4728" alt="${b.name}" />
+            <span class="sprite-tag">${b.name}</span>
+          </div>
           <div class="progress" data-tasks>
             <div class="prog-head">最新進度</div>
             載入任務…
