@@ -297,6 +297,94 @@
       max-width: 980px; margin: 0 auto 40px; padding: 0 16px;
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
+
+    /* Meeting rooms: full width of 2 cols, conference layout */
+    .room.meeting {
+      grid-column: 1 / -1;
+      min-height: 460px;
+      cursor: default;
+    }
+    .room.meeting:hover {
+      transform: none;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.22),
+        0 4px 0 rgba(0,0,0,.25);
+    }
+    .room.meeting .progress {
+      /* Mid-room dialogue frame above table/sprites, same look as offices */
+      top: 80px;
+      bottom: 210px;
+      left: 12px;
+      right: 12px;
+    }
+    .room.meeting .furn-plant-l {
+      bottom: 6px;
+      left: 8px;
+      width: 34px;
+      height: auto;
+      z-index: 1;
+    }
+    .room.meeting .furn-plant-r {
+      bottom: 6px;
+      right: 8px;
+      left: auto;
+      width: 34px;
+      height: auto;
+      z-index: 1;
+    }
+    .meeting-stage {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 10px;
+      width: min(560px, 92%);
+      height: 196px;
+      z-index: 4;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 2px;
+    }
+    .seat-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 10px;
+      width: 100%;
+      min-height: 78px;
+    }
+    .seat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 78px;
+    }
+    .seat .sprite {
+      width: 72px;
+      max-width: 100%;
+      height: auto;
+    }
+    .seat .sprite-tag {
+      margin-top: -2px;
+      font-size: 0.55rem;
+      max-width: 74px;
+    }
+    .meeting-table {
+      width: min(320px, 70%);
+      height: auto;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(1px 2px 0 rgba(0,0,0,.22));
+      margin: -6px 0 -2px;
+      z-index: 2;
+    }
+    .status.meeting {
+      background: #c4b5fd;
+      color: #4c1d95;
+    }
+
     @media (max-width: 720px) {
       .room { min-height: 380px; }
       .desk-zone { width: 100px; }
@@ -308,6 +396,15 @@
       .furn-plant { left: 82px; width: 28px; }
       .furn-coffee { width: 120px; height: auto; }
       .progress { top: 96px; bottom: 70px; max-height: none; }
+
+      .room.meeting { min-height: 420px; }
+      .room.meeting .progress { bottom: 180px; }
+      .meeting-stage { height: 170px; width: min(480px, 94%); }
+      .seat { width: 68px; }
+      .seat .sprite { width: 64px; }
+      .meeting-table { width: min(260px, 72%); }
+      .room.meeting .furn-plant-l,
+      .room.meeting .furn-plant-r { width: 28px; }
     }
     @media (max-width: 480px) {
       .campus { grid-template-columns: 1fr; }
@@ -327,7 +424,7 @@
   </header>
 
   <div class="campus" id="campus" aria-label="像素辦公室全院地圖"></div>
-  <p class="note">點房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error），畫面顯示中文。會議室稍後再處理。</p>
+  <p class="note">點個人房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error），畫面顯示中文。三間會議室已上線（抉擇塔置頂；Parsecreation 兩間置底）；同一 bot 可同時出現喺辦公室同多間會議室。</p>
 
   <script>
     const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
@@ -357,56 +454,125 @@
       { name: '鑄造使', wingLabel: '鑄造院', sprite: 'forge-desk.png', id: '526b2d9a-cf70-43f6-8bd3-2cc2c812f1e9', tint: '#fdba74' }
     ];
 
-    function checker(tint) {
-      return `background-color:${tint};background-image:linear-gradient(45deg,rgba(255,255,255,.22) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.22) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.22) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.22) 75%);background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0;`;
-    }
-
-    function parseCsvLine(line) {
-      const out = []; let cur = ''; let q = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') {
-          if (q && line[i + 1] === '"') { cur += '"'; i++; }
-          else q = !q;
-        } else if (c === ',' && !q) { out.push(cur); cur = ''; }
-        else cur += c;
-      }
-      out.push(cur);
-      return out;
-    }
-
-    function buildCampus() {
-      const root = document.getElementById('campus');
-      root.innerHTML = '';
-      BOTS.forEach(b => {
-        if (b.wing) {
-          const w = document.createElement('div');
-          w.className = 'wing';
-          w.textContent = b.wing;
-          root.appendChild(w);
+    /* Meeting rooms: same bot may appear in office + each meeting they belong to */
+    const MEETINGS = {
+      top: [
+        {
+          key: 'decision-tower',
+          name: '抉擇塔',
+          tint: '#ddd6fe',
+          members: [
+            { name: '智子', sprite: 'zhizi-desk.png' },
+            { name: '決策官', sprite: 'decision-fox.png' }
+          ],
+          blurb: '會議室 · 群組 · 智子、決策官'
         }
-        const el = document.createElement('div');
-        el.className = 'room';
-        el.dataset.bot = b.name;
-        el.style.cssText = checker(b.tint);
-        el.onclick = () => { location.href = 'grokbot://app/v1/agent?id=' + b.id; };
-        el.innerHTML = `
+      ],
+      bottom: [
+        {
+          key: 'parse-magnet',
+          name: 'Parsecreation 磁鐵改靚',
+          tint: '#a5f3fc',
+          members: [
+            { name: '藍圖官', sprite: 'blueprint-desk.png' },
+            { name: '鑄造使', sprite: 'forge-desk.png' },
+            { name: '文案官', sprite: 'copywriter-desk.png' }
+          ],
+          blurb: '會議室 · 群組 · 藍圖官、鑄造使、文案官'
+        },
+        {
+          key: 'parse-brand',
+          name: 'Parsecreation 品牌網站',
+          tint: '#fbcfe8',
+          members: [
+            { name: '藍圖官', sprite: 'blueprint-desk.png' },
+            { name: '文案官', sprite: 'copywriter-desk.png' }
+          ],
+          blurb: '會議室 · 群組 · 藍圖官、文案官'
+        }
+      ]
+    };
+
+    const FURN_V = 'furn18';
+    const SPRITE_V = 'size18';
+
+    function seatHtml(m) {
+      return `<div class="seat"><img class="sprite" src="pixel-assets/${m.sprite}?v=${SPRITE_V}" alt="${m.name}" /><span class="sprite-tag">${m.name}</span></div>`;
+    }
+
+    function splitSeats(members) {
+      /* max 6; back row gets ceil, front gets floor — facing the table */
+      const n = Math.min(members.length, 6);
+      const list = members.slice(0, n);
+      const backN = Math.ceil(n / 2);
+      return { back: list.slice(0, backN), front: list.slice(backN) };
+    }
+
+    function meetingRoomHtml(m) {
+      const { back, front } = splitSeats(m.members);
+      const names = m.members.map(x => x.name).join('、');
+      return `
           <div class="top-wall" aria-hidden="true"></div>
           <div class="door" aria-hidden="true" title="門口">
             <span class="door-knob-l"></span>
             <span class="door-knob-r"></span>
           </div>
           <div class="furn-layer" aria-hidden="true">
-            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-6flat.png?v=furn15" alt="" />
-            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn15" alt="" />
-            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn15" alt="" />
-            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn15" alt="" />
-            <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=furn15" alt="" />
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-6flat.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-plant furn-plant-l" src="pixel-assets/furn-plant.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-plant furn-plant-r" src="pixel-assets/furn-plant.png?v=${FURN_V}" alt="" />
+          </div>
+          <div class="room-name">${m.name}</div>
+          <span class="status meeting" data-status>會議室</span>
+          <div class="progress" data-tasks>
+            <div class="prog-head">最新進度</div>
+            <div class="task-line"><span class="task-meta">會議室</span> · ${m.blurb}</div>
+            <div class="task-line">出席：${names}</div>
+            <div class="task-more">座位最多 6 人 · 分身可同時出現喺多間會議室</div>
+          </div>
+          <div class="meeting-stage" aria-hidden="true">
+            <div class="seat-row seat-row-back">${back.map(seatHtml).join('')}</div>
+            <img class="meeting-table" src="pixel-assets/furn-meeting-table.png?v=${FURN_V}" alt="" />
+            <div class="seat-row seat-row-front">${front.map(seatHtml).join('')}</div>
+          </div>
+        `;
+    }
+
+    function appendMeeting(root, m) {
+      const el = document.createElement('div');
+      el.className = 'room meeting';
+      el.dataset.meeting = m.key;
+      el.style.cssText = checker(m.tint);
+      /* no grokbot deep-link — meeting rooms are multi-bot */
+      el.innerHTML = meetingRoomHtml(m);
+      root.appendChild(el);
+    }
+
+    function appendBotRoom(root, b) {
+      const el = document.createElement('div');
+      el.className = 'room';
+      el.dataset.bot = b.name;
+      el.style.cssText = checker(b.tint);
+      el.onclick = () => { location.href = 'grokbot://app/v1/agent?id=' + b.id; };
+      el.innerHTML = `
+          <div class="top-wall" aria-hidden="true"></div>
+          <div class="door" aria-hidden="true" title="門口">
+            <span class="door-knob-l"></span>
+            <span class="door-knob-r"></span>
+          </div>
+          <div class="furn-layer" aria-hidden="true">
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-6flat.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=${FURN_V}" alt="" />
+            <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=${FURN_V}" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
           <div class="desk-zone">
-            <img class="sprite" src="pixel-assets/${b.sprite}?v=size17" alt="${b.name}" />
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=${SPRITE_V}" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
           <div class="progress" data-tasks>
@@ -414,9 +580,37 @@
             載入任務…
           </div>
         `;
-        root.appendChild(el);
+      root.appendChild(el);
+    }
+
+    function buildCampus() {
+      const root = document.getElementById('campus');
+      root.innerHTML = '';
+
+      /* 1) 抉擇塔 above all individual rooms */
+      const wingTop = document.createElement('div');
+      wingTop.className = 'wing';
+      wingTop.textContent = '會議室 · 抉擇塔';
+      root.appendChild(wingTop);
+      MEETINGS.top.forEach(m => appendMeeting(root, m));
+
+      /* 2) Individual bot offices */
+      BOTS.forEach(b => {
+        if (b.wing) {
+          const w = document.createElement('div');
+          w.className = 'wing';
+          w.textContent = b.wing;
+          root.appendChild(w);
+        }
+        appendBotRoom(root, b);
       });
-      /* meeting room skipped per Look 2026-10-25 */
+
+      /* 3) Other meeting rooms below all offices */
+      const wingBot = document.createElement('div');
+      wingBot.className = 'wing';
+      wingBot.textContent = '會議室 · Parsecreation';
+      root.appendChild(wingBot);
+      MEETINGS.bottom.forEach(m => appendMeeting(root, m));
     }
 
     async function loadSheet() {
@@ -471,7 +665,7 @@
           tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
         });
       } catch (e) {
-        document.querySelectorAll('[data-tasks]').forEach(el => {
+        document.querySelectorAll('.room[data-bot] [data-tasks]').forEach(el => {
           el.innerHTML = '<div class="prog-head">最新進度</div>讀取失敗（請確認 Sheet 公開可檢視）';
         });
       }
