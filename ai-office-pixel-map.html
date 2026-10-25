@@ -340,17 +340,18 @@
       left: 50%;
       transform: translateX(-50%);
       bottom: 8px;
-      width: min(540px, 82%);
-      height: 220px;
+      width: min(420px, 70%);
+      height: 200px;
       z-index: 2;
       pointer-events: none;
     }
     .meeting-table {
       position: absolute;
       left: 50%;
-      top: 48%;
+      top: 52%;
       transform: translate(-50%, -50%);
-      width: min(300px, 58%);
+      /* Smaller vs sitters — ~2.5 seat widths, not a huge slab */
+      width: min(168px, 42%);
       height: auto;
       z-index: 2;
       image-rendering: pixelated;
@@ -360,14 +361,15 @@
     }
     .seat {
       position: absolute;
-      width: 76px;
+      width: 72px;
       display: flex;
       flex-direction: column;
       align-items: center;
       z-index: 3;
     }
     .seat .sprite {
-      width: 58px;
+      /* Larger relative to table so person:chair:table match refs */
+      width: 68px;
       height: auto;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
@@ -392,7 +394,7 @@
     /* Prop on THAT person's table edge, oriented toward them */
     .seat .prop {
       position: absolute;
-      width: 22px;
+      width: 14px; /* person-scale laptop/notebook */
       height: auto;
       z-index: 4;
       image-rendering: pixelated;
@@ -404,18 +406,18 @@
     }
     /* Back row faces camera: laptop on table just below torso/hands */
     .seat.back .prop {
-      top: 58%;
+      top: 62%; /* on table edge in front of sitter */
     }
     /* Front row back-to-camera: laptop on table toward center (above sprite) */
     .seat.front .prop {
-      top: -14px;
+      top: 8px;
     }
     .seat.back {
-      top: 4px;
+      top: 18px; /* tuck toward table, not floating high */
       z-index: 3;
     }
     .seat.front {
-      bottom: 2px;
+      bottom: 0;
       z-index: 4;
     }
     .status.meeting {
@@ -437,11 +439,11 @@
 
       .room.meeting { min-height: 520px; }
       .room.meeting .progress { height: 200px; bottom: auto; }
-      .meeting-stage { height: 190px; width: min(440px, 90%); }
-      .meeting-table { width: min(240px, 62%); }
-      .seat { width: 58px; }
-      .seat .sprite { width: 46px; }
-      .seat .prop { width: 16px; }
+      .meeting-stage { height: 180px; width: min(360px, 88%); }
+      .meeting-table { width: min(140px, 48%); }
+      .seat { width: 60px; }
+      .seat .sprite { width: 56px; }
+      .seat .prop { width: 12px; }
       .room.meeting .furn-plant-l,
       .room.meeting .furn-plant-r { width: 28px; }
     }
