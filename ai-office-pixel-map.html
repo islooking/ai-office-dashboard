@@ -486,7 +486,8 @@
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
       position: absolute;
-      font-size: 0.46rem;
+      font-size: 0.58rem;
+      font-weight: 700;
       line-height: 1.1;
       color: #0f172a;
       background: rgba(255,255,255,.9);
@@ -617,9 +618,9 @@
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
-            /* tags for dba2641 vignette people (heads near top); center = above head */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 38, top: 8, side: 'center' } },
-            { name: '決策官', seat: 'decision-seat', tag: { left: 62, top: 6, side: 'center' } }
+            /* Look t865u/t866u: tags tight above heads; same size as .sprite-tag */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 25, top: 23, side: 'center' } },
+            { name: '決策官', seat: 'decision-seat', tag: { left: 74, top: 23, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -631,10 +632,11 @@
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 36, top: 6, side: 'center' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 64, top: 6, side: 'center' } },
-            { name: '鑄造使', seat: 'forge-seat', tag: { left: 22, top: 70, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 78, top: 70, side: 'center' } }
+            /* visual: backL=智子, backR=文案官, frontL=鑄造使, frontR=藍圖官 */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 24, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 75, top: 25, side: 'center' } },
+            { name: '鑄造使', seat: 'forge-seat', tag: { left: 27, top: 47, side: 'center' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 70, top: 47, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -644,10 +646,10 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            /* heads ~24–28% in vignette-3; facing us → name tight above head, clear of dialogue */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 32, top: 27, side: 'center' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 50, top: 23, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 68, top: 25, side: 'center' } }
+            /* Look t865u/t866u: tight above heads, clear of dialogue */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 22, top: 26, side: 'center' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 23, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 74, top: 27, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
@@ -659,7 +661,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig15'; /* Look t863u: all 3 meetings scale(0.5)+legs at plant tops */
+    const VIGNETTE_V = 'vig16'; /* Look t865u/t866u: meet-name=sprite-tag size, tight head tags */
 
 
     function checker(tint) {
