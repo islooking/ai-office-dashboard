@@ -618,9 +618,9 @@
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
-            /* Look t865u/t866u: tags tight above heads; same size as .sprite-tag */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 25, top: 23, side: 'center' } },
-            { name: '決策官', seat: 'decision-seat', tag: { left: 74, top: 23, side: 'center' } }
+            /* Look t867u: farther above heads; same size as .sprite-tag */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 25, top: 15, side: 'center' } },
+            { name: '決策官', seat: 'decision-seat', tag: { left: 74, top: 15, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -632,11 +632,11 @@
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
-            /* visual: backL=智子, backR=文案官, frontL=鑄造使, frontR=藍圖官 */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 24, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 75, top: 25, side: 'center' } },
-            { name: '鑄造使', seat: 'forge-seat', tag: { left: 27, top: 47, side: 'center' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 70, top: 47, side: 'center' } }
+            /* Look t867u: back tags farther above; forge/blueprint outer sides */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 16, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 75, top: 17, side: 'center' } },
+            { name: '鑄造使', seat: 'forge-seat', tag: { left: 14, top: 58, side: 'right' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 86, top: 58, side: 'left' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -646,10 +646,10 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            /* Look t865u/t866u: tight above heads, clear of dialogue */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 22, top: 26, side: 'center' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 23, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 74, top: 27, side: 'center' } }
+            /* Look t867u: farther above heads, clear of dialogue */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 22, top: 18, side: 'center' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 14, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 74, top: 19, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
@@ -661,7 +661,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig16'; /* Look t865u/t866u: meet-name=sprite-tag size, tight head tags */
+    const VIGNETTE_V = 'vig17'; /* Look t867u: meet-name farther; forge/blueprint side tags */
 
 
     function checker(tint) {
