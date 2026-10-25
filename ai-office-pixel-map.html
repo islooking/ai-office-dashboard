@@ -37,7 +37,7 @@
       margin: 14px auto 28px;
       padding: 14px;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 14px;
       background:
         linear-gradient(90deg, rgba(148,163,184,.07) 1px, transparent 1px) 0 0 / 16px 16px,
@@ -197,14 +197,16 @@
     }
     .progress {
       position: absolute;
-      top: 58px;
-      left: 126px;
+      top: 42%;
+      left: 8px;
       right: 8px;
-      bottom: 8px;
-      z-index: 2;
-      background: rgba(15,23,42,.48);
+      bottom: auto;
+      max-height: 46%;
+      transform: translateY(-20%);
+      z-index: 3;
+      background: rgba(15,23,42,.52);
       color: #f1f5f9;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       line-height: 1.4;
       padding: 8px 10px;
       border-radius: 4px;
@@ -238,21 +240,15 @@
       max-width: 980px; margin: 0 auto 40px; padding: 0 16px;
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
     }
-    @media (max-width: 1100px) {
-      .campus { grid-template-columns: repeat(3, 1fr); }
-      .room { min-height: 290px; }
-    }
     @media (max-width: 720px) {
-      .campus { grid-template-columns: 1fr 1fr; }
       .room { min-height: 280px; }
       .desk-zone { width: 100px; }
       .sprite { width: 96px; }
-      .progress { left: 108px; font-size: 0.66rem; }
+      .progress { font-size: 0.66rem; }
     }
     @media (max-width: 480px) {
       .campus { grid-template-columns: 1fr; }
       .room { min-height: 260px; }
-      .progress { left: 116px; }
     }
   </style>
 </head>
@@ -340,7 +336,7 @@
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
           <div class="desk-zone">
-            <img class="sprite" src="pixel-assets/${b.sprite}?v=restore4728" alt="${b.name}" />
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=twocol1" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
           <div class="progress" data-tasks>
