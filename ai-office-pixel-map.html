@@ -301,7 +301,7 @@
     /* Meeting rooms: full width; dialogue same height as offices; table zone below only */
     .room.meeting {
       grid-column: 1 / -1;
-      min-height: 560px; /* taller so oval + chairs fit under same-height dialogue */
+      min-height: 560px; /* taller so oval + seats fit under same-height dialogue */
       cursor: default;
     }
     .room.meeting:hover {
@@ -334,114 +334,89 @@
       height: auto;
       z-index: 1;
     }
+    /* Absolute seating around one horizontal oval — no stacked chair+standing sprite */
     .meeting-stage {
-      /* Entirely in blank band under dialogue: room 560 - (80+226) ≈ 254px */
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 10px;
-      width: min(520px, 78%);
-      height: 210px;
+      bottom: 8px;
+      width: min(540px, 82%);
+      height: 220px;
       z-index: 2;
       pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 0;
-    }
-    .seat-row {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      gap: 10px;
-      width: 100%;
-      position: relative;
-      z-index: 3;
-    }
-    .seat-row-back { min-height: 72px; margin-bottom: -18px; z-index: 2; }
-    .seat-row-front { min-height: 68px; margin-top: -14px; z-index: 4; }
-    .seat {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 64px;
-    }
-    .seat .chair {
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 36px;
-      height: auto;
-      z-index: 0;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25));
-      pointer-events: none;
-    }
-    .seat-row-front .seat .chair {
-      /* front chairs face the table (toward top); flip for variety */
-      transform: translateX(-50%) scaleY(0.92);
-      bottom: 12px;
-      opacity: 0.95;
-    }
-    .seat .sprite {
-      position: relative;
-      z-index: 2;
-      width: 46px;
-      max-width: 100%;
-      height: auto;
-      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.2));
-    }
-    .seat .sprite-tag {
-      position: relative;
-      z-index: 3;
-      margin-top: -2px;
-      font-size: 0.5rem;
-      max-width: 60px;
-    }
-    .table-zone {
-      position: relative;
-      width: min(280px, 70%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 3;
-      margin: 0 auto;
     }
     .meeting-table {
-      width: 100%;
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: min(300px, 58%);
       height: auto;
+      z-index: 2;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: drop-shadow(1px 2px 0 rgba(0,0,0,.28));
       display: block;
-      z-index: 1;
     }
-    .props-row {
+    .seat {
       position: absolute;
-      left: 8%;
-      right: 8%;
+      width: 76px;
       display: flex;
-      justify-content: space-evenly;
-      align-items: flex-end;
-      pointer-events: none;
-      z-index: 2;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
     }
-    .props-row-back {
-      top: 18%;
-    }
-    .props-row-front {
-      bottom: 22%;
-    }
-    .props-row img {
-      width: 22px;
+    .seat .sprite {
+      width: 58px;
       height: auto;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      filter: drop-shadow(0 1px 0 rgba(0,0,0,.2));
+      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25));
+      display: block;
+      position: relative;
+      z-index: 3;
+    }
+    .seat .sprite-tag {
+      margin-top: -4px;
+      font-size: 0.5rem;
+      max-width: 70px;
+      text-align: center;
+      line-height: 1.1;
+      color: #0f172a;
+      background: rgba(255,255,255,.72);
+      border-radius: 4px;
+      padding: 1px 3px;
+      z-index: 5;
+      position: relative;
+    }
+    /* Prop on THAT person's table edge, oriented toward them */
+    .seat .prop {
+      position: absolute;
+      width: 22px;
+      height: auto;
+      z-index: 4;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.22));
+      pointer-events: none;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    /* Back row faces camera: laptop on table just below torso/hands */
+    .seat.back .prop {
+      top: 58%;
+    }
+    /* Front row back-to-camera: laptop on table toward center (above sprite) */
+    .seat.front .prop {
+      top: -14px;
+    }
+    .seat.back {
+      top: 4px;
+      z-index: 3;
+    }
+    .seat.front {
+      bottom: 2px;
+      z-index: 4;
     }
     .status.meeting {
       background: #c4b5fd;
@@ -462,12 +437,11 @@
 
       .room.meeting { min-height: 520px; }
       .room.meeting .progress { height: 200px; bottom: auto; }
-      .meeting-stage { height: 180px; width: min(420px, 88%); }
-      .seat { width: 54px; }
-      .seat .sprite { width: 40px; }
-      .seat .chair { width: 30px; }
-      .table-zone { width: min(220px, 72%); }
-      .props-row img { width: 18px; }
+      .meeting-stage { height: 190px; width: min(440px, 90%); }
+      .meeting-table { width: min(240px, 62%); }
+      .seat { width: 58px; }
+      .seat .sprite { width: 46px; }
+      .seat .prop { width: 16px; }
       .room.meeting .furn-plant-l,
       .room.meeting .furn-plant-r { width: 28px; }
     }
@@ -519,7 +493,8 @@
       { name: '鑄造使', wingLabel: '鑄造院', sprite: 'forge-desk.png', id: '526b2d9a-cf70-43f6-8bd3-2cc2c812f1e9', tint: '#fdba74' }
     ];
 
-    /* Meeting rooms: same bot may appear in office + each meeting they belong to */
+    /* Meeting rooms: same bot may appear in office + each meeting they belong to.
+       seat: composed seated+chair sprite base (append -s / -n by side). */
     const MEETINGS = {
       top: [
         {
@@ -527,8 +502,8 @@
           name: '抉擇塔',
           tint: '#ddd6fe',
           members: [
-            { name: '智子', sprite: 'zhizi-meet.png' },
-            { name: '決策官', sprite: 'decision-fox-meet.png' }
+            { name: '智子', seat: 'zhizi-seat' },
+            { name: '決策官', seat: 'decision-seat' }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -539,10 +514,10 @@
           name: 'Parsecreation 磁鐵改靚',
           tint: '#a5f3fc',
           members: [
-            { name: '智子', sprite: 'zhizi-meet.png' },
-            { name: '藍圖官', sprite: 'blueprint-meet.png' },
-            { name: '鑄造使', sprite: 'forge-meet.png' },
-            { name: '文案官', sprite: 'copywriter-meet.png' }
+            { name: '智子', seat: 'zhizi-seat' },
+            { name: '藍圖官', seat: 'blueprint-seat' },
+            { name: '鑄造使', seat: 'forge-seat' },
+            { name: '文案官', seat: 'copywriter-seat' }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -551,17 +526,18 @@
           name: 'Parsecreation 品牌網站',
           tint: '#fbcfe8',
           members: [
-            { name: '智子', sprite: 'zhizi-meet.png' },
-            { name: '藍圖官', sprite: 'blueprint-meet.png' },
-            { name: '文案官', sprite: 'copywriter-meet.png' }
+            { name: '智子', seat: 'zhizi-seat' },
+            { name: '藍圖官', seat: 'blueprint-seat' },
+            { name: '文案官', seat: 'copywriter-seat' }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
       ]
     };
 
-    const FURN_V = 'furn22';
-    const SPRITE_V = 'meet5';
+    const FURN_V = 'furn23';
+    const SPRITE_V = 'meet6';
+    const SEAT_V = 'seat1';
 
 
     function checker(tint) {
@@ -582,32 +558,51 @@
       return out;
     }
 
-    function seatHtml(m) {
-      return `<div class="seat">
-            <img class="chair" src="pixel-assets/furn-chair.png?v=${FURN_V}" alt="" />
-            <img class="sprite" src="pixel-assets/${m.sprite}?v=${SPRITE_V}" alt="${m.name}" />
-            <span class="sprite-tag">${m.name}</span>
-          </div>`;
-    }
-
-    function propHtml(i) {
-      const file = (i % 2 === 0) ? 'furn-laptop.png' : 'furn-notebook.png';
-      return `<img src="pixel-assets/${file}?v=${FURN_V}" alt="" />`;
+    /* Evenly space seats along the oval (left% of stage). n seats → centers. */
+    function seatLeftPercents(n) {
+      if (n <= 0) return [];
+      if (n === 1) return [50];
+      if (n === 2) return [34, 66];
+      if (n === 3) return [28, 50, 72];
+      return Array.from({ length: n }, (_, i) => 22 + (i * 56) / (n - 1));
     }
 
     function splitSeats(members) {
-      /* max 6; back row gets ceil, front gets floor — gather around ONE oval table */
+      /* max 6; for 2 people sit across (1 back / 1 front); else back gets ceil */
       const n = Math.min(members.length, 6);
       const list = members.slice(0, n);
+      if (n === 2) return { back: [list[0]], front: [list[1]] };
       const backN = Math.ceil(n / 2);
       return { back: list.slice(0, backN), front: list.slice(backN) };
+    }
+
+    function propFile(side, i) {
+      /* Prop faces the person: back row → lid toward far side; front → screen toward us */
+      const useLaptop = (i % 2 === 0);
+      if (side === 'back') return useLaptop ? 'laptop-back.png' : 'notebook-face-s.png';
+      return useLaptop ? 'laptop-face-n.png' : 'notebook-face-n.png';
+    }
+
+    function seatHtml(m, side, leftPct, propIdx) {
+      const dir = side === 'back' ? 's' : 'n'; /* south=face camera; north=back to camera */
+      const file = `${m.seat}-${dir}.png`;
+      const prop = propFile(side, propIdx);
+      const propImg = `<img class="prop" src="pixel-assets/${prop}?v=${SEAT_V}" alt="" />`;
+      const spr = `<img class="sprite" src="pixel-assets/${file}?v=${SEAT_V}" alt="${m.name}" />`;
+      const tag = `<span class="sprite-tag">${m.name}</span>`;
+      /* front: prop above (toward table); back: sprite first, prop overlays mid */
+      const body = side === 'front' ? (propImg + spr + tag) : (spr + propImg + tag);
+      return `<div class="seat ${side}" style="left:${leftPct}%;transform:translateX(-50%);">${body}</div>`;
     }
 
     function meetingRoomHtml(m) {
       const { back, front } = splitSeats(m.members);
       const names = m.members.map(x => x.name).join('、');
-      const backProps = back.map((_, i) => propHtml(i)).join('');
-      const frontProps = front.map((_, i) => propHtml(i + 1)).join('');
+      const backLefts = seatLeftPercents(back.length);
+      const frontLefts = seatLeftPercents(front.length);
+      const seats =
+        back.map((mem, i) => seatHtml(mem, 'back', backLefts[i], i)).join('') +
+        front.map((mem, i) => seatHtml(mem, 'front', frontLefts[i], i + back.length)).join('');
       return `
           <div class="top-wall" aria-hidden="true"></div>
           <div class="door" aria-hidden="true" title="門口">
@@ -630,13 +625,8 @@
             <div class="task-more">座位最多 6 人 · 分身可同時出現喺多間會議室</div>
           </div>
           <div class="meeting-stage" aria-hidden="true">
-            <div class="seat-row seat-row-back">${back.map(seatHtml).join('')}</div>
-            <div class="table-zone">
-              <div class="props-row props-row-back">${backProps}</div>
-              <img class="meeting-table" src="pixel-assets/furn-meeting-table-oval.png?v=${FURN_V}" alt="" />
-              <div class="props-row props-row-front">${frontProps}</div>
-            </div>
-            <div class="seat-row seat-row-front">${front.map(seatHtml).join('')}</div>
+            <img class="meeting-table" src="pixel-assets/furn-meeting-table-oval.png?v=${FURN_V}" alt="" />
+            ${seats}
           </div>
         `;
     }
