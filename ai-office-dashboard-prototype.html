@@ -415,29 +415,31 @@
             el.style.color = '#94a3b8';
             return;
           }
-          // 最新一行（表係舊→新 append）
-          const latest = list[list.length - 1];
-          const open = list.filter(r => ['pending', 'doing', 'hold'].includes(r.status));
-          const meta = statusMeta(latest.status);
-          let line = `<span style="color:${meta.color}">${meta.label}</span>`;
-          if (latest.status === 'done' && latest.summary) {
-            line += ` · ${latest.summary}`;
-          } else if (latest.status === 'hold' && (latest.notes || latest.summary)) {
-            line += ` · ${latest.notes || latest.summary}`;
-          } else if (latest.task) {
-            line += ` · ${latest.task}`;
+          // 最多顯示最新 5 個任務（表係舊→新 append，由新到舊）
+          const MAX_SHOW = 5;
+          const shown = list.slice(-MAX_SHOW).reverse();
+          const hiddenOpen = list.slice(0, Math.max(0, list.length - MAX_SHOW))
+            .filter(r => ['pending', 'doing', 'hold'].includes(r.status)).length;
+          const lines = shown.map((r, i) => {
+            const meta = statusMeta(r.status);
+            let detail = '';
+            if (r.status === 'done' && r.summary) {
+              detail = r.summary;
+            } else if (r.status === 'hold' && (r.notes || r.summary)) {
+              detail = r.notes || r.summary;
+            } else if (r.task) {
+              detail = r.task;
+            }
+            const top = i === 0 ? '0' : '4px';
+            return `<div style="margin-top:${top}"><span style="color:${meta.color}">${meta.label}</span>${detail ? ' · ' + detail : ''}</div>`;
+          });
+          if (list.length > MAX_SHOW) {
+            const extra = list.length - MAX_SHOW;
+            let note = `另有 ${extra} 單較舊`;
+            if (hiddenOpen) note += `（其中未完成 ${hiddenOpen}）`;
+            lines.push(`<div style="margin-top:4px;color:#64748b;">${note}</div>`);
           }
-          if (open.length > 1) {
-            const doing = open.filter(r => r.status === 'doing').length;
-            const hold = open.filter(r => r.status === 'hold').length;
-            const pending = open.filter(r => r.status === 'pending').length;
-            const bits = [];
-            if (doing) bits.push(`進行中 ${doing}`);
-            if (hold) bits.push(`暫停 ${hold}`);
-            if (pending) bits.push(`未開始 ${pending}`);
-            line += `<div style="margin-top:4px;color:#64748b;">未完成：${bits.join('｜')}</div>`;
-          }
-          el.innerHTML = line;
+          el.innerHTML = lines.join('');
         });
       } catch (e) {
         statusEls.forEach(el => {
