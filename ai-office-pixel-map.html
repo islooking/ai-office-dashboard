@@ -173,10 +173,10 @@
     }
     /* 牆傢俬：貼頂牆、細一半、喺名牌／狀態之上；底角：闊文件櫃＋直立大咖啡機 */
     .furn-cabinet {
-      top: 6px;
+      top: 4px;
       left: 6px;
-      width: 96px; /* 闊／多櫃連體 */
-      height: auto;
+      width: auto;
+      height: 120px; /* 一人高、六行抽屜 */
       z-index: 7;
     }
     .furn-whiteboard {
@@ -299,7 +299,7 @@
       .desk-zone { width: 100px; }
       .sprite { width: 96px; }
       .progress { font-size: 0.66rem; }
-      .furn-cabinet { width: 72px; }
+      .furn-cabinet { height: 96px; width: auto; }
       .furn-whiteboard { width: 36px; right: 34px; }
       .furn-clock { width: 14px; }
       .furn-plant { left: 82px; width: 28px; }
@@ -394,16 +394,16 @@
             <span class="door-knob-r"></span>
           </div>
           <div class="furn-layer" aria-hidden="true">
-            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-wide.png?v=furn6" alt="" />
-            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn6" alt="" />
-            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn6" alt="" />
-            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn6" alt="" />
-            <img class="furn furn-coffee" src="pixel-assets/furn-coffee-tall.png?v=furn6" alt="" />
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-tall.png?v=furn7" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn7" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn7" alt="" />
+            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn7" alt="" />
+            <img class="furn furn-coffee" src="pixel-assets/furn-coffee-tall.png?v=furn7" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
           <div class="desk-zone">
-            <img class="sprite" src="pixel-assets/${b.sprite}?v=size7" alt="${b.name}" />
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=size8" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
           <div class="progress" data-tasks>
