@@ -475,13 +475,13 @@
          Plant top ≈ 55px; vignette PNG has ~23.6% empty below content → bottom ≈ 8px. */
       bottom: 8px;
     }
-    /* Progress stretches down to just above name tags (highest head tag ~23%).
-       Name anchor from room bottom ≈ stageBottom + (1-0.23)*0.5*stageW; + gap for tag. */
+    /* Progress ends higher so names sit in gap between dialogue bottom and heads. */
     .room.meeting[data-meeting="parse-brand"] .progress,
     .room.meeting[data-meeting="decision-tower"] .progress,
     .room.meeting[data-meeting="parse-magnet"] .progress {
       height: auto;
-      bottom: calc(30px + 0.385 * min(400px, 76%));
+      /* Look t868u/t869u: leave gap for names between dialogue bottom and heads */
+      bottom: calc(48px + 0.42 * min(400px, 76%));
     }
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
@@ -549,7 +549,8 @@
       .room.meeting[data-meeting="decision-tower"] .progress,
       .room.meeting[data-meeting="parse-magnet"] .progress {
         height: auto;
-        bottom: calc(28px + 0.385 * min(360px, 90%));
+        /* Look t868u/t869u: leave gap for names between dialogue bottom and heads */
+        bottom: calc(44px + 0.42 * min(360px, 90%));
       }
       .meeting-vignette { width: 100%; height: auto; }
       .meeting-table { width: min(170px, 50%); }
@@ -618,9 +619,9 @@
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
-            /* Look t867u: farther above heads; same size as .sprite-tag */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 25, top: 15, side: 'center' } },
-            { name: '決策官', seat: 'decision-seat', tag: { left: 74, top: 15, side: 'center' } }
+            /* Look t868u/t869u: names in gap below progress, clear of art */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 25, top: 20, side: 'center' } },
+            { name: '決策官', seat: 'decision-seat', tag: { left: 74, top: 20, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、決策官'
         }
@@ -632,11 +633,11 @@
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
-            /* Look t867u: back tags farther above; forge/blueprint outer sides */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 16, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 75, top: 17, side: 'center' } },
-            { name: '鑄造使', seat: 'forge-seat', tag: { left: 14, top: 58, side: 'right' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 86, top: 58, side: 'left' } }
+            /* Look t868u/t869u: center tags in gap; forge/blueprint further out */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 24, top: 21, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 75, top: 22, side: 'center' } },
+            { name: '鑄造使', seat: 'forge-seat', tag: { left: 6, top: 62, side: 'right' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 94, top: 62, side: 'left' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、鑄造使、文案官'
         },
@@ -646,10 +647,10 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            /* Look t867u: farther above heads, clear of dialogue */
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 22, top: 18, side: 'center' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 14, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 74, top: 19, side: 'center' } }
+            /* Look t868u/t869u: names in gap below progress, clear of art */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 22, top: 22, side: 'center' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 48, top: 20, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 74, top: 23, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
@@ -661,7 +662,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig17'; /* Look t867u: meet-name farther; forge/blueprint side tags */
+    const VIGNETTE_V = 'vig18'; /* Look t868u/t869u: names in gap below progress; forge/blueprint further out */
 
 
     function checker(tint) {
