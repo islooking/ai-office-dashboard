@@ -490,6 +490,20 @@
     .meet-name.side-center { transform: translate(-50%, -100%); }
     .meet-name.side-right { transform: translate(-100%, -50%); } /* tag left of sprite */
     .meet-name.side-left { transform: translate(0, -50%); } /* tag right of sprite */
+    /* Brand room stage is scale(0.5) — counter-scale names so they match other rooms' meet-name size.
+       Facing-us sitters: tags sit just above head (not in empty top pad). */
+    .room.meeting[data-meeting="parse-brand"] .meet-name.side-center {
+      transform: translate(-50%, -100%) scale(2);
+      transform-origin: center bottom;
+    }
+    .room.meeting[data-meeting="parse-brand"] .meet-name.side-left {
+      transform: translate(0, -50%) scale(2);
+      transform-origin: left center;
+    }
+    .room.meeting[data-meeting="parse-brand"] .meet-name.side-right {
+      transform: translate(-100%, -50%) scale(2);
+      transform-origin: right center;
+    }
     .status.meeting {
       background: #c4b5fd;
       color: #4c1d95;
@@ -606,9 +620,10 @@
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
-            { name: '智子', seat: 'zhizi-seat', tag: { left: 32, top: 6, side: 'center' } },
-            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 50, top: 4, side: 'center' } },
-            { name: '文案官', seat: 'copywriter-seat', tag: { left: 68, top: 6, side: 'center' } }
+            /* heads ~24–28% in vignette-3; facing us → name tight above head, clear of dialogue */
+            { name: '智子', seat: 'zhizi-seat', tag: { left: 32, top: 27, side: 'center' } },
+            { name: '藍圖官', seat: 'blueprint-seat', tag: { left: 50, top: 23, side: 'center' } },
+            { name: '文案官', seat: 'copywriter-seat', tag: { left: 68, top: 25, side: 'center' } }
           ],
           blurb: '會議室 · 群組 · 智子、藍圖官、文案官'
         }
@@ -620,7 +635,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig8'; /* brand CSS scale half: layout-brand2 */
+    const VIGNETTE_V = 'vig8'; /* brand CSS scale half: layout-brand3 */
 
 
     function checker(tint) {
