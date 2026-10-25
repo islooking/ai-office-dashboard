@@ -127,7 +127,7 @@
     .door-knob-r { right: 18px; }
     .room-name {
       position: absolute;
-      top: 78px; /* 牆傢俬之下 */
+      top: 56px; /* 文件櫃腳對落少少，唔重疊 */
       left: 8px;
       z-index: 4;
       background: rgba(15,23,42,.82);
@@ -144,7 +144,7 @@
     }
     .status {
       position: absolute;
-      top: 78px; /* 牆傢俬之下 */
+      top: 56px; /* 文件櫃腳對落少少，唔重疊 */
       right: 8px;
       z-index: 4;
       font-size: 0.66rem;
@@ -248,11 +248,11 @@
     }
     .progress {
       position: absolute;
-      top: 104px; /* 名牌／狀態之下 */
+      top: 80px; /* 名牌／狀態之下 */
       left: 8px;
       right: 8px;
       /* 底部緊貼咖啡機頂（咖啡高100＋底4＋隙8），唔重疊 */
-      bottom: 140px; /* 清公仔區；梳化更矮唔使再貼底 */
+      bottom: 140px; /* 清公仔區 */
       max-height: none;
       height: auto;
       transform: none;
@@ -397,16 +397,16 @@
             <span class="door-knob-r"></span>
           </div>
           <div class="furn-layer" aria-hidden="true">
-            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-6flat.png?v=furn12" alt="" />
-            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn12" alt="" />
-            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn12" alt="" />
-            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn12" alt="" />
-            <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=furn12" alt="" />
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-6flat.png?v=furn13" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn13" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn13" alt="" />
+            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn13" alt="" />
+            <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=furn13" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
           <div class="desk-zone">
-            <img class="sprite" src="pixel-assets/${b.sprite}?v=size12" alt="${b.name}" />
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=size13" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
           <div class="progress" data-tasks>
