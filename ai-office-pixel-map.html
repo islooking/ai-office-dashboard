@@ -334,26 +334,27 @@
       height: auto;
       z-index: 1;
     }
-    /* Absolute seating around one horizontal oval — no stacked chair+standing sprite */
+    /* Absolute seating: one shared scale — person+chair+oval+laptop */
     .meeting-stage {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 8px;
-      width: min(420px, 70%);
-      height: 200px;
+      bottom: 6px;
+      width: min(400px, 68%);
+      height: 210px;
       z-index: 2;
       pointer-events: none;
     }
+    /* Layer order: back seats (z1) → table (z3) → props (z4) → front seats (z5) */
     .meeting-table {
       position: absolute;
       left: 50%;
-      top: 52%;
+      top: 50%;
       transform: translate(-50%, -50%);
-      /* Smaller vs sitters — ~2.5 seat widths, not a huge slab */
-      width: min(168px, 42%);
+      /* ~2× seated sprite width — table fits the sitters, not a slab */
+      width: min(150px, 40%);
       height: auto;
-      z-index: 2;
+      z-index: 3;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: drop-shadow(1px 2px 0 rgba(0,0,0,.28));
@@ -361,64 +362,58 @@
     }
     .seat {
       position: absolute;
-      width: 72px;
+      width: 88px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      z-index: 3;
     }
     .seat .sprite {
-      /* Larger relative to table so person:chair:table match refs */
-      width: 68px;
+      width: 78px;
       height: auto;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25));
       display: block;
       position: relative;
-      z-index: 3;
     }
     .seat .sprite-tag {
       margin-top: -4px;
       font-size: 0.5rem;
-      max-width: 70px;
+      max-width: 72px;
       text-align: center;
       line-height: 1.1;
       color: #0f172a;
       background: rgba(255,255,255,.72);
       border-radius: 4px;
       padding: 1px 3px;
-      z-index: 5;
+      z-index: 6;
       position: relative;
     }
-    /* Prop on THAT person's table edge, oriented toward them */
-    .seat .prop {
+    /* Free props (siblings of seats) sit ON the oval, person-scale ≈ torso */
+    .meet-prop {
       position: absolute;
-      width: 14px; /* person-scale laptop/notebook */
+      width: 16px; /* small laptop/notebook vs person — not torso-sized */
       height: auto;
-      z-index: 4;
+      z-index: 6; /* above table AND front seats so props stay visible */
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      filter: drop-shadow(0 1px 0 rgba(0,0,0,.22));
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.35));
       pointer-events: none;
-      left: 50%;
       transform: translateX(-50%);
     }
-    /* Back row faces camera: laptop on table just below torso/hands */
-    .seat.back .prop {
-      top: 62%; /* on table edge in front of sitter */
+    .meet-prop.back {
+      top: 39%; /* on far half of oval, in front of back sitter */
     }
-    /* Front row back-to-camera: laptop on table toward center (above sprite) */
-    .seat.front .prop {
-      top: 8px;
+    .meet-prop.front {
+      top: 51%; /* on near half of oval, in front of front sitter */
     }
     .seat.back {
-      top: 18px; /* tuck toward table, not floating high */
-      z-index: 3;
+      top: 10px; /* tuck into far table edge */
+      z-index: 1;
     }
     .seat.front {
-      bottom: 0;
-      z-index: 4;
+      bottom: -2px;
+      z-index: 5;
     }
     .status.meeting {
       background: #c4b5fd;
@@ -439,11 +434,11 @@
 
       .room.meeting { min-height: 520px; }
       .room.meeting .progress { height: 200px; bottom: auto; }
-      .meeting-stage { height: 180px; width: min(360px, 88%); }
-      .meeting-table { width: min(140px, 48%); }
-      .seat { width: 60px; }
-      .seat .sprite { width: 56px; }
-      .seat .prop { width: 12px; }
+      .meeting-stage { height: 190px; width: min(340px, 90%); }
+      .meeting-table { width: min(130px, 42%); }
+      .seat { width: 72px; }
+      .seat .sprite { width: 66px; }
+      .meet-prop { width: 14px; }
       .room.meeting .furn-plant-l,
       .room.meeting .furn-plant-r { width: 28px; }
     }
@@ -537,9 +532,9 @@
       ]
     };
 
-    const FURN_V = 'furn23';
-    const SPRITE_V = 'meet6';
-    const SEAT_V = 'seat1';
+    const FURN_V = 'furn24';
+    const SPRITE_V = 'meet7';
+    const SEAT_V = 'seat3';
 
 
     function checker(tint) {
@@ -564,9 +559,10 @@
     function seatLeftPercents(n) {
       if (n <= 0) return [];
       if (n === 1) return [50];
-      if (n === 2) return [34, 66];
-      if (n === 3) return [28, 50, 72];
-      return Array.from({ length: n }, (_, i) => 22 + (i * 56) / (n - 1));
+      /* Keep sitters over the oval, not out past its ends */
+      if (n === 2) return [38, 62];
+      if (n === 3) return [32, 50, 68];
+      return Array.from({ length: n }, (_, i) => 28 + (i * 44) / (n - 1));
     }
 
     function splitSeats(members) {
@@ -585,16 +581,17 @@
       return useLaptop ? 'laptop-face-n.png' : 'notebook-face-n.png';
     }
 
-    function seatHtml(m, side, leftPct, propIdx) {
+    function seatHtml(m, side, leftPct) {
       const dir = side === 'back' ? 's' : 'n'; /* south=face camera; north=back to camera */
       const file = `${m.seat}-${dir}.png`;
-      const prop = propFile(side, propIdx);
-      const propImg = `<img class="prop" src="pixel-assets/${prop}?v=${SEAT_V}" alt="" />`;
       const spr = `<img class="sprite" src="pixel-assets/${file}?v=${SEAT_V}" alt="${m.name}" />`;
       const tag = `<span class="sprite-tag">${m.name}</span>`;
-      /* front: prop above (toward table); back: sprite first, prop overlays mid */
-      const body = side === 'front' ? (propImg + spr + tag) : (spr + propImg + tag);
-      return `<div class="seat ${side}" style="left:${leftPct}%;transform:translateX(-50%);">${body}</div>`;
+      return `<div class="seat ${side}" style="left:${leftPct}%;transform:translateX(-50%);">${spr}${tag}</div>`;
+    }
+
+    function propHtml(side, leftPct, propIdx) {
+      const prop = propFile(side, propIdx);
+      return `<img class="meet-prop ${side}" style="left:${leftPct}%;" src="pixel-assets/${prop}?v=${SEAT_V}" alt="" />`;
     }
 
     function meetingRoomHtml(m) {
@@ -602,9 +599,12 @@
       const names = m.members.map(x => x.name).join('、');
       const backLefts = seatLeftPercents(back.length);
       const frontLefts = seatLeftPercents(front.length);
-      const seats =
-        back.map((mem, i) => seatHtml(mem, 'back', backLefts[i], i)).join('') +
-        front.map((mem, i) => seatHtml(mem, 'front', frontLefts[i], i + back.length)).join('');
+      /* Paint order: back seats → table → props → front seats (CSS z reinforces) */
+      const backSeats = back.map((mem, i) => seatHtml(mem, 'back', backLefts[i])).join('');
+      const frontSeats = front.map((mem, i) => seatHtml(mem, 'front', frontLefts[i])).join('');
+      const props =
+        back.map((_, i) => propHtml('back', backLefts[i], i)).join('') +
+        front.map((_, i) => propHtml('front', frontLefts[i], i + back.length)).join('');
       return `
           <div class="top-wall" aria-hidden="true"></div>
           <div class="door" aria-hidden="true" title="門口">
@@ -627,8 +627,10 @@
             <div class="task-more">座位最多 6 人 · 分身可同時出現喺多間會議室</div>
           </div>
           <div class="meeting-stage" aria-hidden="true">
+            ${backSeats}
             <img class="meeting-table" src="pixel-assets/furn-meeting-table-oval.png?v=${FURN_V}" alt="" />
-            ${seats}
+            ${props}
+            ${frontSeats}
           </div>
         `;
     }
