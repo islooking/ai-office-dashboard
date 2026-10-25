@@ -176,7 +176,8 @@
       top: 4px;
       left: 4px;
       width: auto;
-      height: 48px; /* 同白板高，正面平貼牆 */
+      height: 48px; /* 六櫃平排正面貼牆 */
+      max-width: 55%;
       z-index: 7;
       image-rendering: pixelated;
     }
@@ -203,10 +204,11 @@
     }
     .furn-coffee {
       bottom: 4px;
-      right: 6px;
-      width: auto;
-      height: 100px; /* 杯減半後矮返 */
+      right: 4px;
+      width: 120px; /* 兩梳化夾茶几 */
+      height: auto;
       z-index: 2;
+      image-rendering: pixelated;
     }
     .desk-zone {
       position: absolute;
@@ -250,7 +252,7 @@
       left: 8px;
       right: 8px;
       /* 底部緊貼咖啡機頂（咖啡高100＋底4＋隙8），唔重疊 */
-      bottom: 112px;
+      bottom: 53px; /* 緊貼梳化茶几頂 */
       max-height: none;
       height: auto;
       transform: none;
@@ -300,12 +302,12 @@
       .desk-zone { width: 100px; }
       .sprite { width: 96px; }
       .progress { font-size: 0.66rem; }
-      .furn-cabinet { height: 40px; width: auto; image-rendering: pixelated; }
+      .furn-cabinet { height: 40px; width: auto; max-width: 60%; image-rendering: pixelated; }
       .furn-whiteboard { width: 36px; right: 34px; }
       .furn-clock { width: 14px; }
       .furn-plant { left: 82px; width: 28px; }
-      .furn-coffee { height: 84px; width: auto; }
-      .progress { top: 96px; bottom: 96px; max-height: none; }
+      .furn-coffee { width: 96px; height: auto; }
+      .progress { top: 96px; bottom: 70px; max-height: none; }
     }
     @media (max-width: 480px) {
       .campus { grid-template-columns: 1fr; }
@@ -395,16 +397,16 @@
             <span class="door-knob-r"></span>
           </div>
           <div class="furn-layer" aria-hidden="true">
-            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-flat.png?v=furn11" alt="" />
-            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn11" alt="" />
-            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn11" alt="" />
-            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn11" alt="" />
-            <img class="furn furn-coffee" src="pixel-assets/furn-coffee-tall.png?v=furn11" alt="" />
+            <img class="furn furn-cabinet" src="pixel-assets/furn-cabinet-6flat.png?v=furn12" alt="" />
+            <img class="furn furn-whiteboard" src="pixel-assets/furn-whiteboard.png?v=furn12" alt="" />
+            <img class="furn furn-clock" src="pixel-assets/furn-clock.png?v=furn12" alt="" />
+            <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=furn12" alt="" />
+            <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=furn12" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
           <span class="status idle" data-status>暫無</span>
           <div class="desk-zone">
-            <img class="sprite" src="pixel-assets/${b.sprite}?v=size11" alt="${b.name}" />
+            <img class="sprite" src="pixel-assets/${b.sprite}?v=size12" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
           <div class="progress" data-tasks>
