@@ -480,8 +480,8 @@
     .room.meeting[data-meeting="decision-tower"] .progress,
     .room.meeting[data-meeting="parse-magnet"] .progress {
       height: auto;
-      /* Look t868u/t869u: leave gap for names between dialogue bottom and heads */
-      bottom: calc(48px + 0.42 * min(400px, 76%));
+      /* Look t870u — expand progress down to just above names; no overlap. */
+      bottom: calc(32px + 0.40 * min(400px, 76%));
     }
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
@@ -549,8 +549,8 @@
       .room.meeting[data-meeting="decision-tower"] .progress,
       .room.meeting[data-meeting="parse-magnet"] .progress {
         height: auto;
-        /* Look t868u/t869u: leave gap for names between dialogue bottom and heads */
-        bottom: calc(44px + 0.42 * min(360px, 90%));
+        /* Look t870u — expand progress down to just above names; no overlap. */
+        bottom: calc(28px + 0.40 * min(360px, 90%));
       }
       .meeting-vignette { width: 100%; height: auto; }
       .meeting-table { width: min(170px, 50%); }
@@ -662,7 +662,7 @@
     const FURN_V = 'furn31';
     const SPRITE_V = 'meet13';
     const SEAT_V = 'seat12';
-    const VIGNETTE_V = 'vig18'; /* Look t868u/t869u: names in gap below progress; forge/blueprint further out */
+    const VIGNETTE_V = 'vig19'; /* Look t870u: progress expand down just above names */
 
 
     function checker(tint) {
