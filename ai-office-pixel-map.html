@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>魔法學院｜AI 辦公室像素地圖</title>
+  <style>
+    :root { --ink:#0f172a; --muted:#94a3b8; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang HK", "Noto Sans TC", sans-serif;
+      background: #0b1220;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    header { padding: 18px 20px 6px; text-align: center; }
+    header h1 { font-size: 1.12rem; margin: 0 0 6px; }
+    header p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+    .badge {
+      display: inline-block; margin-top: 10px; padding: 4px 10px;
+      border-radius: 999px; background: #1e293b; color: #4ade80;
+      font-size: 0.72rem; border: 1px solid #334155;
+    }
+    .links { margin-top: 8px; font-size: 0.8rem; }
+    .links a { color: #7dd3fc; margin: 0 8px; }
+    .campus {
+      max-width: 1280px;
+      margin: 14px auto 28px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      background:
+        linear-gradient(90deg, rgba(148,163,184,.07) 1px, transparent 1px) 0 0 / 16px 16px,
+        linear-gradient(rgba(148,163,184,.07) 1px, transparent 1px) 0 0 / 16px 16px,
+        #111827;
+      border: 3px solid #475569;
+      border-radius: 12px;
+    }
+    .wing {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 10px;
+      color: #64748b; font-size: 0.72rem; font-weight: 700; letter-spacing: .18em;
+      padding: 2px 4px;
+    }
+    .wing::before, .wing::after {
+      content: ""; flex: 1; height: 10px;
+      background: repeating-linear-gradient(90deg, #94a3b8 0 8px, #64748b 8px 10px, #cbd5e1 10px 18px);
+      border-radius: 2px; opacity: .55;
+    }
+    .room {
+      position: relative;
+      border: 3px solid #64748b;
+      border-radius: 6px;
+      overflow: hidden;
+      min-height: 248px;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.12);
+    }
+    .room:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.2);
+    }
+    .room-bar {
+      position: absolute; top: 8px; left: 8px; right: 8px;
+      display: flex; justify-content: space-between; align-items: center; gap: 6px; z-index: 2;
+    }
+    .room-title {
+      background: rgba(15,23,42,.82); color: #f8fafc;
+      font-size: 0.72rem; font-weight: 700; padding: 3px 7px; border-radius: 4px;
+      border: 1px solid rgba(255,255,255,.18); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 68%;
+    }
+    .status {
+      font-size: 0.68rem; font-weight: 700; padding: 3px 7px; border-radius: 4px;
+      border: 1px solid rgba(0,0,0,.12); flex-shrink: 0;
+    }
+    .status.doing { background: #38bdf8; color: #0c4a6e; }
+    .status.done { background: #4ade80; color: #14532d; }
+    .status.pending { background: #fbbf24; color: #78350f; }
+    .status.hold { background: #fb923c; color: #7c2d12; }
+    .status.error { background: #f87171; color: #7f1d1d; }
+    .status.idle { background: #94a3b8; color: #0f172a; }
+    .sprite {
+      position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%);
+      width: min(82%, 200px); border-radius: 8px;
+      filter: drop-shadow(0 6px 0 rgba(0,0,0,.12));
+    }
+    .tasks {
+      position: absolute; left: 8px; right: 8px; bottom: 8px;
+      background: rgba(15,23,42,.78); color: #e2e8f0;
+      font-size: 0.68rem; line-height: 1.35; padding: 6px 8px;
+      border-radius: 4px; border: 1px solid rgba(255,255,255,.1);
+      z-index: 2; max-height: 78px; overflow: hidden;
+    }
+    .meeting {
+      grid-column: 1 / -1;
+      min-height: 220px;
+      border: 3px solid #64748b;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      background-color: #f5d0c5;
+      background-image:
+        linear-gradient(45deg, rgba(255,255,255,.22) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.22) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.22) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.22) 75%);
+      background-size: 22px 22px;
+    }
+    .meet-img {
+      display: block; width: min(92%, 720px); margin: 44px auto 16px;
+      border-radius: 10px; border: 2px solid rgba(15,23,42,.2);
+    }
+    .note {
+      max-width: 980px; margin: 0 auto 40px; padding: 0 16px;
+      color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
+    }
+    @media (max-width: 1100px) { .campus { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 720px) {
+      .campus { grid-template-columns: 1fr 1fr; }
+      .room { min-height: 220px; }
+    }
+    @media (max-width: 480px) { .campus { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>魔法學院｜AI 辦公室像素地圖</h1>
+    <p>每房一個 bot · 狀態同任務由 Dashboard_Tasks live 餵入 · 最多顯示 5 單</p>
+    <div class="badge">LIVE · Sheet 驅動</div>
+    <div class="links">
+      <a href="ai-office-dashboard-prototype.html">卡片 Dashboard</a>
+      <a href="ai-office-pixel-prototype.html">3 房原型</a>
+    </div>
+  </header>
+
+  <div class="campus" id="campus" aria-label="像素辦公室全院地圖"></div>
+  <p class="note">點房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error），畫面顯示中文。</p>
+
+  <script>
+    const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Dashboard_Tasks`;
+    const STATUS_META = {
+      pending: { label: '未開始', cls: 'pending' },
+      doing:   { label: '進行中', cls: 'doing' },
+      hold:    { label: '暫停', cls: 'hold' },
+      done:    { label: '完成', cls: 'done' },
+      error:   { label: '失敗', cls: 'error' }
+    };
+    const BOTS = [
+      { wing: '大內／決策', name: '智子', wingLabel: '大內總管', sprite: 'zhizi-desk.jpg', id: '227130dc-dae2-45ff-b3b1-7bccad7b6fa6', tint: '#c4b5fd' },
+      { name: '決策官', wingLabel: '抉擇塔', sprite: 'decision-fox.jpg', id: 'c69d6fe4-6bc9-4849-a512-0612d1a78730', tint: '#fda4af' },
+      { wing: '生活／醫療／財務', name: '起居執事', wingLabel: '起居殿', sprite: 'steward-desk.jpg', id: '6ed56648-d32c-4d16-b1c1-1c9b72ea623c', tint: '#fdba74' },
+      { name: '醫療官', wingLabel: '醫療研究所', sprite: 'medic-desk.jpg', id: '36dc2123-df41-4610-99b6-5c63584ffebf', tint: '#6ee7b7' },
+      { name: '首席煉金師', wingLabel: '煉金工房', sprite: 'alchemist-desk.jpg', id: '1eb2242a-0f84-4fd0-9ca3-aab32c156d54', tint: '#fcd34d' },
+      { wing: '創作', name: '首席夢境研究員', wingLabel: '夢境研究所', sprite: 'dream-desk.jpg', id: 'cce316ea-c6b1-490b-a7d7-d0d546e1e859', tint: '#c4b5fd' },
+      { name: '外傳樓主', wingLabel: '外傳樓', sprite: 'chronicler-desk.jpg', id: 'a47b80f9-59df-4c65-a56e-03cb9173a938', tint: '#93c5fd' },
+      { wing: '前線／命理／檔案', name: '守燈人', wingLabel: '孤燈樓', sprite: 'lamp-desk.jpg', id: '7a75adaa-986b-450e-a0bf-d19c209bddc9', tint: '#a5b4fc' },
+      { name: '刑事專員', wingLabel: '刑事檔案館', sprite: 'criminal-desk.jpg', id: '07d20867-71c9-46c4-b62f-48cd29697144', tint: '#fca5a5' },
+      { name: '大祭司', wingLabel: '觀星樓', sprite: 'priest-desk.jpg', id: '19cde1af-6b7b-4aab-9d25-59137e09c988', tint: '#f0abfc' },
+      { name: '星圖館主', wingLabel: '星圖檔案館', sprite: 'archivist-desk.jpg', id: '0bc910ed-2ea3-4cc7-83ae-1bda867f3b52', tint: '#818cf8' },
+      { wing: '郵務／Parsecreation', name: '郵務官', wingLabel: '貓頭鷹郵務', sprite: 'owl-desk.jpg', id: 'd611fd5d-3e62-4679-87ca-726a0759c572', tint: '#fbbf24' },
+      { name: '藍圖官', wingLabel: '藍圖研究所', sprite: 'blueprint-desk.jpg', id: '5bd6acd4-ea89-4ff4-a45c-c5786d75ba3c', tint: '#67e8f9' },
+      { name: '文案官', wingLabel: '文案工房', sprite: 'copywriter-desk.jpg', id: '00f2e6e3-6477-4376-b4fb-b36ee2fe68a6', tint: '#f9a8d4' },
+      { name: '鑄造使', wingLabel: '鑄造院', sprite: 'forge-desk.jpg', id: '526b2d9a-cf70-43f6-8bd3-2cc2c812f1e9', tint: '#fdba74' }
+    ];
+
+    function checker(tint) {
+      return `background-color:${tint};background-image:linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.2) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.2) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.2) 75%);background-size:20px 20px;`;
+    }
+
+    function parseCsvLine(line) {
+      const out = []; let cur = ''; let q = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') {
+          if (q && line[i + 1] === '"') { cur += '"'; i++; }
+          else q = !q;
+        } else if (c === ',' && !q) { out.push(cur); cur = ''; }
+        else cur += c;
+      }
+      out.push(cur);
+      return out;
+    }
+
+    function buildCampus() {
+      const root = document.getElementById('campus');
+      root.innerHTML = '';
+      BOTS.forEach(b => {
+        if (b.wing) {
+          const w = document.createElement('div');
+          w.className = 'wing';
+          w.textContent = b.wing;
+          root.appendChild(w);
+        }
+        const el = document.createElement('div');
+        el.className = 'room';
+        el.dataset.bot = b.name;
+        el.style.cssText = checker(b.tint);
+        el.onclick = () => { location.href = 'grokbot://app/v1/agent?id=' + b.id; };
+        el.innerHTML = `
+          <div class="room-bar">
+            <span class="room-title">${b.wingLabel} · ${b.name}</span>
+            <span class="status idle" data-status>暫無</span>
+          </div>
+          <img class="sprite" src="pixel-assets/${b.sprite}" alt="${b.name}" />
+          <div class="tasks" data-tasks>載入任務…</div>
+        `;
+        root.appendChild(el);
+      });
+      const meet = document.createElement('div');
+      meet.className = 'meeting';
+      meet.innerHTML = `
+        <div class="room-bar">
+          <span class="room-title">抉擇塔｜會議室</span>
+          <span class="status hold">待命</span>
+        </div>
+        <img class="meet-img" src="pixel-assets/meeting-zhizi-decision.jpg" alt="抉擇塔會議室" />
+      `;
+      root.appendChild(meet);
+    }
+
+    async function loadSheet() {
+      try {
+        const res = await fetch(SHEET_URL);
+        if (!res.ok) throw new Error('fetch');
+        const csv = await res.text();
+        const lines = csv.trim().split(/\r?\n/);
+        if (lines.length < 2) throw new Error('empty');
+        const rows = lines.slice(1).map(line => {
+          const cols = parseCsvLine(line).map(c => c.replace(/^"|"$/g, ''));
+          return {
+            task: cols[1] || '',
+            bot: cols[3] || '',
+            status: (cols[4] || '').trim().toLowerCase(),
+            summary: cols[5] || '',
+            notes: cols[8] || ''
+          };
+        }).filter(r => r.bot);
+
+        const byBot = {};
+        rows.forEach(r => {
+          if (!byBot[r.bot]) byBot[r.bot] = [];
+          byBot[r.bot].push(r);
+        });
+
+        document.querySelectorAll('.room[data-bot]').forEach(el => {
+          const bot = el.dataset.bot;
+          const list = byBot[bot] || [];
+          const statusEl = el.querySelector('[data-status]');
+          const tasksEl = el.querySelector('[data-tasks]');
+          if (!list.length) {
+            statusEl.textContent = '暫無';
+            statusEl.className = 'status idle';
+            tasksEl.textContent = '（暫無手上任務）';
+            return;
+          }
+          const latest = list[list.length - 1];
+          const meta = STATUS_META[latest.status] || { label: latest.status || '—', cls: 'idle' };
+          statusEl.textContent = meta.label;
+          statusEl.className = 'status ' + meta.cls;
+
+          const MAX = 5;
+          const shown = list.slice(-MAX).reverse();
+          const hiddenOpen = list.slice(0, Math.max(0, list.length - MAX))
+            .filter(r => ['pending', 'doing', 'hold'].includes(r.status)).length;
+          const linesHtml = shown.map(r => {
+            const m = STATUS_META[r.status] || { label: r.status };
+            let detail = '';
+            if (r.status === 'done' && r.summary) detail = r.summary;
+            else if (r.status === 'hold' && (r.notes || r.summary)) detail = r.notes || r.summary;
+            else detail = r.task || r.summary || '';
+            return `${m.label}${detail ? ' · ' + detail : ''}`;
+          });
+          if (list.length > MAX) {
+            let note = `另有 ${list.length - MAX} 單較舊`;
+            if (hiddenOpen) note += `（未完成 ${hiddenOpen}）`;
+            linesHtml.push(note);
+          }
+          tasksEl.innerHTML = linesHtml.join('<br/>');
+        });
+      } catch (e) {
+        document.querySelectorAll('[data-tasks]').forEach(el => {
+          el.textContent = '讀取失敗（請確認 Sheet 公開可檢視）';
+        });
+      }
+    }
+
+    buildCampus();
+    loadSheet();
+    setInterval(loadSheet, 60000);
+  </script>
+</body>
+</html>
