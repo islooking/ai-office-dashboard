@@ -147,26 +147,20 @@
       z-index: 14;
       pointer-events: none;
     }
-    .status,
-    .status-counts {
+    .status {
       position: absolute;
-      top: 56px; /* 文件櫃腳對落少少，唔重疊 */
+      top: 56px; /* 文件櫃腳對落少少，唔重疊（legacy single-chip） */
       right: 8px;
       z-index: 4;
       font-size: 0.66rem;
       font-weight: 700;
-    }
-    .status {
       padding: 2px 6px;
       border-radius: 3px;
       border: 1px solid rgba(0,0,0,.12);
     }
     .status-counts {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 3px;
-      max-width: 52%;
+      font-size: 0.66rem;
+      font-weight: 700;
     }
     .status-counts .status-chip {
       padding: 2px 5px;
@@ -174,6 +168,24 @@
       border: 1px solid rgba(0,0,0,.12);
       white-space: nowrap;
       line-height: 1.2;
+    }
+    /* Status chips: top-right INSIDE dark progress box (Look t921u) */
+    .progress .status-counts {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      max-width: 58%;
+    }
+    .progress .status-counts .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 3px;
     }
     .status.doing, .status-chip.doing { background: #38bdf8; color: #0c4a6e; }
     .status.done, .status-chip.done { background: #4ade80; color: #14532d; }
@@ -287,7 +299,7 @@
     }
     .progress {
       position: absolute;
-      top: 80px; /* default; office overrides below; meetings override later */
+      top: 80px; /* default; office overrides below; meetings: filled by .progress-wrap */
       left: 8px;
       right: 8px;
       bottom: 110px;
@@ -299,7 +311,7 @@
       color: #f1f5f9;
       font-size: 0.72rem;
       line-height: 1.4;
-      padding: 8px 10px;
+      padding: 28px 10px 8px; /* top-right room for status chips (Look t921u) */
       border-radius: 4px;
       border: 1px solid rgba(255,255,255,.14);
       overflow: auto;
@@ -308,6 +320,35 @@
       flex-direction: column;
       justify-content: flex-start;
       align-items: stretch;
+    }
+    /* Meeting: wrap holds absolute band; meet-kind sits outside dark box top-left */
+    .progress-wrap {
+      position: absolute;
+      top: 80px;
+      left: 8px;
+      right: 8px;
+      bottom: 110px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      min-height: 0;
+      pointer-events: none;
+    }
+    .progress-wrap > * { pointer-events: auto; }
+    .progress-wrap .progress {
+      position: relative;
+      top: auto;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      height: auto;
+      max-height: none;
+      z-index: auto;
     }
     .room:not(.meeting) .progress {
       top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
@@ -344,9 +385,9 @@
       text-decoration-thickness: 2px;
       text-decoration-color: #c4b5fd;
     }
-    .progress .meet-kind {
+    .progress-wrap .meet-kind {
       display: inline-block;
-      align-self: flex-start; /* hug label — progress is flex column stretch */
+      align-self: flex-start; /* outside dark box, top-left (Look t921u) */
       width: fit-content;
       max-width: max-content;
       font-size: 0.7rem; /* same as .meet-roster / host (Look t911u) */
@@ -356,10 +397,11 @@
       padding: 1px 6px;
       border-radius: 3px;
       border: 1px solid #5b21b6;
-      margin-bottom: 5px;
+      margin-bottom: 0;
       letter-spacing: .02em;
       box-shadow: 0 1px 0 rgba(0,0,0,.25);
       white-space: nowrap;
+      flex-shrink: 0;
     }
     .progress .meet-roster .roster-sep {
       color: #64748b;
@@ -502,8 +544,8 @@
     }
 
     /* Meeting rooms: full width; equal-gap like office top box (Look t885–t888).
-       CSS vars = fallback; syncMeetingGaps() measures room-name & .meet-name and sets
-       progress top/bottom so both gaps = --office-gap on phone + desktop. */
+       CSS vars = fallback; syncMeetingGaps() sets .progress-wrap top/bottom from
+       label-top band + .meet-name so both gaps = --office-gap (Look t921u). */
     .room.meeting {
       grid-column: 1 / -1;
       min-height: 640px; /* dialogue + gap + bottom-pinned square vignette */
@@ -522,7 +564,7 @@
         inset 0 0 0 1px rgba(255,255,255,.22),
         0 4px 0 rgba(0,0,0,.25);
     }
-    .room.meeting .progress {
+    .room.meeting .progress-wrap {
       top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
       left: 8px;
       right: 8px;
@@ -686,7 +728,7 @@
          Plant top ≈ 55px; vignette PNG has ~23.6% empty below content → bottom ≈ 8px. */
       bottom: 8px;
     }
-    /* Meeting progress bottom: see .room.meeting .progress equal-gap formula. */
+    /* Meeting progress bottom: see .room.meeting .progress-wrap equal-gap formula. */
 
     /* Name labels tight beside head/shoulder — never over dialogue (dialogue is above stage) */
     .meet-name {
@@ -795,6 +837,41 @@
       error:   { label: '失敗', cls: 'error' },
       cancelled: { label: '取消', cls: 'cancelled' }
     };
+
+    /* Two-row status chips inside progress top-right (Look t921u):
+       bottom = doing/hold/done；top = pending/error/cancelled；no primary → secondary alone */
+    function buildStatusCountsHtml(countsIn) {
+      const counts = Object.assign({}, countsIn);
+      const primaryOrder = ['doing', 'hold', 'done'];
+      const secondaryOrder = ['pending', 'error', 'cancelled'];
+      function chipsFor(keys) {
+        const out = [];
+        keys.forEach(k => {
+          if (!counts[k]) return;
+          const m = STATUS_META[k] || { label: k, cls: k };
+          out.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
+          delete counts[k];
+        });
+        return out.join('');
+      }
+      const primary = chipsFor(primaryOrder);
+      const secondary = chipsFor(secondaryOrder);
+      const extra = Object.keys(counts).map(k => {
+        const m = STATUS_META[k] || { label: k, cls: 'idle' };
+        return `<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`;
+      }).join('');
+      if (!primary && !secondary && !extra) {
+        return '<span class="status-chip idle">暫無</span>';
+      }
+      if (!primary) {
+        return `<div class="status-row">${secondary}${extra}</div>`;
+      }
+      const top = secondary || extra
+        ? `<div class="status-row">${secondary}${extra}</div>`
+        : '';
+      return `${top}<div class="status-row">${primary}</div>`;
+    }
+
     const BOTS = [
       { wing: '大內／決策', name: '智子', wingLabel: '大內總管', sprite: 'zhizi-desk.png', id: '227130dc-dae2-45ff-b3b1-7bccad7b6fa6', tint: '#c4b5fd' },
       { name: '決策官', wingLabel: '抉擇塔', sprite: 'decision-fox.png', id: 'c69d6fe4-6bc9-4849-a512-0612d1a78730', tint: '#fda4af' },
@@ -1000,12 +1077,14 @@
             <img class="furn furn-plant furn-plant-r" src="pixel-assets/furn-plant.png?v=${FURN_V}" alt="" />
           </div>
           <div class="room-name">${m.name}</div>
-          <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
-          <div class="progress" data-tasks>
+          <div class="progress-wrap" data-progress-wrap>
             <div class="meet-kind">${m.brandPrefix ? m.brandPrefix + '會議室' : '會議室'}</div>
-            <div class="meet-roster">${meetingRosterHtml(m)}</div>
-            <div class="prog-head">最新進度</div>
-            <div data-meet-tasks>（暫無項目）</div>
+            <div class="progress" data-tasks>
+              <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
+              <div class="meet-roster">${meetingRosterHtml(m)}</div>
+              <div class="prog-head">最新進度</div>
+              <div data-meet-tasks>（暫無項目）</div>
+            </div>
           </div>
           ${stage}
         `;
@@ -1042,14 +1121,16 @@
             <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=${FURN_V}" alt="" />
           </div>
           <div class="room-name">${b.wingLabel}</div>
-          <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
           <div class="desk-zone">
             <img class="sprite" src="pixel-assets/${b.sprite}?v=${SPRITE_V}" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
-          <div class="progress" data-tasks>
-            <div class="prog-head">最新進度</div>
-            載入任務…
+          <div class="progress">
+            <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
+            <div data-tasks>
+              <div class="prog-head">最新進度</div>
+              載入任務…
+            </div>
           </div>
         `;
       root.appendChild(el);
@@ -1122,31 +1203,23 @@
           const statusEl = el.querySelector('[data-status]');
           const tasksEl = el.querySelector('[data-tasks]');
           if (!list.length) {
-            statusEl.className = 'status-counts';
-            statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
+            if (statusEl) {
+              statusEl.className = 'status-counts';
+              statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
+            }
             tasksEl.innerHTML = '<div class="prog-head">最新進度</div>（暫無手上任務）';
             return;
           }
-          /* Right corner: count each status that exists (Look t892u) */
+          /* Progress box top-right: two-row status counts (Look t921u) */
           const counts = {};
           list.forEach(r => {
             const key = (r.status || '').trim().toLowerCase() || 'idle';
             counts[key] = (counts[key] || 0) + 1;
           });
-          const order = ['doing', 'pending', 'hold', 'error', 'cancelled', 'done'];
-          const chips = [];
-          order.forEach(k => {
-            if (!counts[k]) return;
-            const m = STATUS_META[k] || { label: k, cls: k };
-            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
-            delete counts[k];
-          });
-          Object.keys(counts).forEach(k => {
-            const m = STATUS_META[k] || { label: k, cls: 'idle' };
-            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
-          });
-          statusEl.className = 'status-counts';
-          statusEl.innerHTML = chips.join('') || '<span class="status-chip idle">暫無</span>';
+          if (statusEl) {
+            statusEl.className = 'status-counts';
+            statusEl.innerHTML = buildStatusCountsHtml(counts);
+          }
 
           const shown = list.slice().reverse(); /* 唔限五行，房內 scroll 睇晒 */
           const linesHtml = shown.map(r => {
@@ -1160,7 +1233,7 @@
           tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
         });
 
-        /* Meeting rooms: same Sheet rows + corner status counts (Look t911u) */
+        /* Meeting rooms: same Sheet rows + progress-box status counts (Look t921u) */
         document.querySelectorAll('.room.meeting[data-meeting-target]').forEach(el => {
           const target = el.dataset.meetingTarget;
           const list = byBot[target] || [];
@@ -1179,21 +1252,9 @@
             const key = (r.status || '').trim().toLowerCase() || 'idle';
             counts[key] = (counts[key] || 0) + 1;
           });
-          const order = ['doing', 'pending', 'hold', 'error', 'cancelled', 'done'];
-          const chips = [];
-          order.forEach(k => {
-            if (!counts[k]) return;
-            const m = STATUS_META[k] || { label: k, cls: k };
-            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
-            delete counts[k];
-          });
-          Object.keys(counts).forEach(k => {
-            const m = STATUS_META[k] || { label: k, cls: 'idle' };
-            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
-          });
           if (statusEl) {
             statusEl.className = 'status-counts';
-            statusEl.innerHTML = chips.join('') || '<span class="status-chip idle">暫無</span>';
+            statusEl.innerHTML = buildStatusCountsHtml(counts);
           }
           if (!meetTasks) return;
           const shown = list.slice().reverse();
@@ -1216,7 +1277,8 @@
       }
     }
 
-    /* Meeting progress: top from status-row; bottom from .meet-name (Look t885–t899).
+    /* Meeting progress-wrap: top from fixed label-top band (cabinet foot);
+       bottom from .meet-name. Do NOT measure [data-status] (now inside progress) — Look t921u.
        Door-side .room-name is display-only. CSS bottom formula is fallback only. */
     function meetingGapPx(room) {
       const raw = getComputedStyle(room).getPropertyValue('--office-gap').trim();
@@ -1226,24 +1288,17 @@
 
     function syncMeetingGaps() {
       document.querySelectorAll('.room.meeting').forEach(room => {
-        /* Top gap from status-row band (top:56px), not door-side room-name (Look t899u) */
-        const label = room.querySelector('[data-status]') || room.querySelector('.status');
-        const prog = room.querySelector('.progress');
+        const wrap = room.querySelector('[data-progress-wrap]') || room.querySelector('.progress-wrap');
         const names = room.querySelectorAll('.meet-name');
-        if (!prog || !names.length) return;
+        if (!wrap || !names.length) return;
         const gap = meetingGapPx(room);
         const roomRect = room.getBoundingClientRect();
         if (roomRect.height < 40) return;
         const cs = getComputedStyle(room);
         const labelTop = parseFloat(cs.getPropertyValue('--label-top')) || 56;
         const labelH = parseFloat(cs.getPropertyValue('--label-h')) || 17;
-        let topPx;
-        if (label) {
-          const labelRect = label.getBoundingClientRect();
-          topPx = Math.max(0, labelRect.bottom - roomRect.top + gap);
-        } else {
-          topPx = Math.max(0, labelTop + labelH + gap);
-        }
+        /* Fixed cabinet-foot band — same visual band status used to occupy */
+        let topPx = Math.max(0, labelTop + labelH + gap);
         let nameTop = Infinity;
         names.forEach(n => {
           const r = n.getBoundingClientRect();
@@ -1261,9 +1316,9 @@
           topPx = Math.max(0, topPx - cutTop);
           bottomPx = Math.max(0, bottomPx - cutBot);
         }
-        prog.style.top = topPx + 'px';
-        prog.style.bottom = bottomPx + 'px';
-        prog.style.height = 'auto';
+        wrap.style.top = topPx + 'px';
+        wrap.style.bottom = bottomPx + 'px';
+        wrap.style.height = 'auto';
       });
     }
 
