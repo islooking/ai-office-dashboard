@@ -963,10 +963,18 @@
           if (r.height > 0) nameTop = Math.min(nameTop, r.top);
         });
         if (!Number.isFinite(nameTop)) return;
-        const topPx = Math.max(0, labelRect.bottom - roomRect.top + gap);
-        const bottomPx = Math.max(0, roomRect.bottom - nameTop + gap);
-        /* Keep a usable progress band */
-        if (roomRect.height - topPx - bottomPx < 80) return;
+        let topPx = Math.max(0, labelRect.bottom - roomRect.top + gap);
+        let bottomPx = Math.max(0, roomRect.bottom - nameTop + gap);
+        /* Keep a usable progress band — clamp, never skip (skip left CSS fallback unequal on phone) */
+        const minBand = 80;
+        const h = roomRect.height;
+        if (h - topPx - bottomPx < minBand) {
+          const need = topPx + bottomPx + minBand - h;
+          const cutTop = Math.min(topPx, need / 2);
+          const cutBot = need - cutTop;
+          topPx = Math.max(0, topPx - cutTop);
+          bottomPx = Math.max(0, bottomPx - cutBot);
+        }
         prog.style.top = topPx + 'px';
         prog.style.bottom = bottomPx + 'px';
         prog.style.height = 'auto';
