@@ -127,8 +127,6 @@
     .door-knob-r { right: 18px; }
     .room-name {
       position: absolute;
-      top: 56px; /* 文件櫃腳對落少少，唔重疊 */
-      left: 8px;
       z-index: 4;
       background: rgba(15,23,42,.82);
       color: #f8fafc;
@@ -137,10 +135,21 @@
       padding: 2px 6px;
       border-radius: 3px;
       border: 1px solid rgba(255,255,255,.16);
-      max-width: calc(100% - 148px); /* leave space for status count chips */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    /* Offices only (Look t894u): name to the right of door; room title only */
+    .room:not(.meeting) .room-name {
+      top: 14px; /* align with door (door top 6 + ~height mid) */
+      left: calc(50% + 28px); /* door half-width 24px + 4px gap */
+      max-width: calc(50% - 36px);
+    }
+    /* Meetings unchanged */
+    .room.meeting .room-name {
+      top: 56px;
+      left: 8px;
+      max-width: calc(100% - 148px);
     }
     .status,
     .status-counts {
@@ -963,7 +972,7 @@
             <img class="furn furn-plant" src="pixel-assets/furn-plant.png?v=${FURN_V}" alt="" />
             <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=${FURN_V}" alt="" />
           </div>
-          <div class="room-name">${b.wingLabel} · ${b.name}</div>
+          <div class="room-name">${b.wingLabel}</div>
           <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
           <div class="desk-zone">
             <img class="sprite" src="pixel-assets/${b.sprite}?v=${SPRITE_V}" alt="${b.name}" />
