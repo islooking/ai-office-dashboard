@@ -139,19 +139,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    /* Offices only (Look t894u/t895u): on top-wall, immediately right of door */
-    .room:not(.meeting) .room-name {
-      top: 6px; /* align top with door top (Look t896u) */
-      left: calc(50% + 26px); /* door half-width 24px + 2px gap */
-      max-width: calc(50% - 90px); /* clear whiteboard/clock on the right */
-      z-index: 14; /* above top-wall + furn-layer so label is visible */
+    /* Offices + meetings (Look t894–t899u): tan top-wall, right of door, top = door top */
+    .room .room-name {
+      top: 6px;
+      left: calc(50% + 26px);
+      max-width: calc(50% - 90px);
+      z-index: 14;
       pointer-events: none;
-    }
-    /* Meetings unchanged */
-    .room.meeting .room-name {
-      top: 56px;
-      left: 8px;
-      max-width: calc(100% - 148px);
     }
     .status,
     .status-counts {
@@ -785,7 +779,7 @@
       bottom: [
         {
           key: 'parse-magnet',
-          name: 'Parsecreation 磁鐵改靚',
+          name: '磁鐵改靚',
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
@@ -799,7 +793,7 @@
         },
         {
           key: 'parse-brand',
-          name: 'Parsecreation 品牌網站',
+          name: '品牌網站',
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
@@ -1020,7 +1014,7 @@
       /* 3) Other meeting rooms below all offices */
       const wingBot = document.createElement('div');
       wingBot.className = 'wing';
-      wingBot.textContent = '會議室 · Parsecreation';
+      wingBot.textContent = '會議室';
       root.appendChild(wingBot);
       MEETINGS.bottom.forEach(m => appendMeeting(root, m));
     }
@@ -1099,8 +1093,8 @@
       }
     }
 
-    /* Meeting progress: lock equal gaps from measured room-name & bot-name boxes
-       (same --office-gap as office top box). CSS bottom formula is fallback only. Look t885–t888. */
+    /* Meeting progress: top from status-row; bottom from .meet-name (Look t885–t899).
+       Door-side .room-name is display-only. CSS bottom formula is fallback only. */
     function meetingGapPx(room) {
       const raw = getComputedStyle(room).getPropertyValue('--office-gap').trim();
       const n = parseFloat(raw);
@@ -1109,21 +1103,30 @@
 
     function syncMeetingGaps() {
       document.querySelectorAll('.room.meeting').forEach(room => {
-        const label = room.querySelector('.room-name');
+        /* Top gap from status-row band (top:56px), not door-side room-name (Look t899u) */
+        const label = room.querySelector('[data-status]') || room.querySelector('.status');
         const prog = room.querySelector('.progress');
         const names = room.querySelectorAll('.meet-name');
-        if (!label || !prog || !names.length) return;
+        if (!prog || !names.length) return;
         const gap = meetingGapPx(room);
         const roomRect = room.getBoundingClientRect();
         if (roomRect.height < 40) return;
-        const labelRect = label.getBoundingClientRect();
+        const cs = getComputedStyle(room);
+        const labelTop = parseFloat(cs.getPropertyValue('--label-top')) || 56;
+        const labelH = parseFloat(cs.getPropertyValue('--label-h')) || 17;
+        let topPx;
+        if (label) {
+          const labelRect = label.getBoundingClientRect();
+          topPx = Math.max(0, labelRect.bottom - roomRect.top + gap);
+        } else {
+          topPx = Math.max(0, labelTop + labelH + gap);
+        }
         let nameTop = Infinity;
         names.forEach(n => {
           const r = n.getBoundingClientRect();
           if (r.height > 0) nameTop = Math.min(nameTop, r.top);
         });
         if (!Number.isFinite(nameTop)) return;
-        let topPx = Math.max(0, labelRect.bottom - roomRect.top + gap);
         let bottomPx = Math.max(0, roomRect.bottom - nameTop + gap);
         /* Keep a usable progress band — clamp, never skip (skip left CSS fallback unequal on phone) */
         const minBand = 80;
