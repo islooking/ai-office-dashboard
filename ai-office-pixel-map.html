@@ -962,9 +962,22 @@
       .campus { grid-template-columns: 1fr; }
       .room { min-height: 360px; }
     }
+  
+    .local-only-banner {
+      background: #7c2d12;
+      color: #ffedd5;
+      text-align: center;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-bottom: 2px solid #fdba74;
+    }
+    .local-only-banner[hidden] { display: none !important; }
+
   </style>
 </head>
 <body>
+  <div class="local-only-banner" id="localOnlyBanner" hidden>公開 Pages 已停餵私人 Sheet · 本地版請用 OneDrive／堅果雲夾 12_AI_Office</div>
   <header>
     <h1>魔法學院｜AI 辦公室像素地圖</h1>
     <p>每房一個 bot · 狀態同任務由 Dashboard_Tasks live 餵入 · 可 scroll 睇晒所有任務</p>
@@ -979,8 +992,11 @@
   <p class="note">點個人房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error／cancelled），畫面顯示中文。三間會議室已上線（抉擇塔置頂；Parsecreation 兩間置底）；同一 bot 可同時出現喺辦公室同多間會議室。</p>
 
   <script>
-    const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
-    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Dashboard_Tasks`;
+    /* Pages 止血 (Look 2026-10-27): github.io never fetches live personal Sheets.
+       Sheet IDs retired from public fetch — local package uses ./data/*.json instead. */
+    const IS_PUBLIC_PAGES = /(?:^|\.)github\.io$/i.test(location.hostname);
+    const SHEET_URL = null; /* disabled — do not restore public CSV publish */
+    const DEMO_TASK_ROWS = []; /* empty demo — no personal data on public Pages */
     const STATUS_META = {
       pending: { label: '未開始', cls: 'pending' },
       doing:   { label: '進行中', cls: 'doing' },
@@ -1386,108 +1402,101 @@
       });
     }
 
+    function applyTaskRows(rowsIn) {
+      const rows = rowsIn.map(r => ({
+        task: r.task || '',
+        bot: r.bot || r.target_bot || '',
+        status: String(r.status || '').trim().toLowerCase(),
+        summary: r.summary || r.result_summary || '',
+        notes: r.notes || ''
+      })).filter(r => r.bot);
+      const byBot = {};
+      rows.forEach(r => {
+        if (!byBot[r.bot]) byBot[r.bot] = [];
+        byBot[r.bot].push(r);
+      });
+      document.querySelectorAll('.room[data-bot]').forEach(el => {
+        const bot = el.dataset.bot;
+        const list = byBot[bot] || [];
+        const statusEl = el.querySelector('[data-status]');
+        const tasksEl = el.querySelector('[data-tasks]');
+        if (!list.length) {
+          if (statusEl) {
+            statusEl.className = 'status-counts';
+            statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
+          }
+          if (tasksEl) tasksEl.innerHTML = '<div class="prog-head">最新進度</div>（暫無手上任務）';
+          return;
+        }
+        const counts = {};
+        list.forEach(r => {
+          const key = (r.status || '').trim().toLowerCase() || 'idle';
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        if (statusEl) {
+          statusEl.className = 'status-counts';
+          statusEl.innerHTML = buildStatusCountsHtml(counts);
+        }
+        const shown = list.slice().reverse();
+        const linesHtml = shown.map(r => {
+          const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
+          let detail = '';
+          if (r.task && r.summary && r.summary !== r.task) detail = r.task + ' · ' + r.summary;
+          else detail = r.task || r.summary || r.notes || '';
+          return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
+        });
+        if (tasksEl) tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
+      });
+      document.querySelectorAll('.room.meeting[data-meeting-target]').forEach(el => {
+        const target = el.dataset.meetingTarget;
+        const list = byBot[target] || [];
+        const statusEl = el.querySelector('[data-status]');
+        const meetTasks = el.querySelector('[data-meet-tasks]');
+        if (!list.length) {
+          if (statusEl) {
+            statusEl.className = 'status-counts';
+            statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
+          }
+          if (meetTasks) meetTasks.innerHTML = '（暫無項目）';
+          return;
+        }
+        const counts = {};
+        list.forEach(r => {
+          const key = (r.status || '').trim().toLowerCase() || 'idle';
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        if (statusEl) {
+          statusEl.className = 'status-counts';
+          statusEl.innerHTML = buildStatusCountsHtml(counts);
+        }
+        if (!meetTasks) return;
+        const shown = list.slice().reverse();
+        meetTasks.innerHTML = shown.map(r => {
+          const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
+          let detail = '';
+          if (r.task && r.summary && r.summary !== r.task) detail = r.task + ' · ' + r.summary;
+          else detail = r.task || r.summary || r.notes || '';
+          return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
+        }).join('');
+      });
+    }
+
     async function loadSheet() {
-      try {
-        const res = await fetch(SHEET_URL);
-        if (!res.ok) throw new Error('fetch');
-        const csv = await res.text();
-        const lines = csv.trim().split(/\r?\n/);
-        if (lines.length < 2) throw new Error('empty');
-        const rows = lines.slice(1).map(line => {
-          const cols = parseCsvLine(line).map(c => c.replace(/^"|"$/g, ''));
-          return {
-            task: cols[1] || '',
-            bot: cols[3] || '',
-            status: (cols[4] || '').trim().toLowerCase(),
-            summary: cols[5] || '',
-            notes: cols[8] || ''
-          };
-        }).filter(r => r.bot);
-
-        const byBot = {};
-        rows.forEach(r => {
-          if (!byBot[r.bot]) byBot[r.bot] = [];
-          byBot[r.bot].push(r);
-        });
-
-        document.querySelectorAll('.room[data-bot]').forEach(el => {
-          const bot = el.dataset.bot;
-          const list = byBot[bot] || [];
-          const statusEl = el.querySelector('[data-status]');
-          const tasksEl = el.querySelector('[data-tasks]');
-          if (!list.length) {
-            if (statusEl) {
-              statusEl.className = 'status-counts';
-              statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
-            }
-            tasksEl.innerHTML = '<div class="prog-head">最新進度</div>（暫無手上任務）';
-            return;
-          }
-          /* Progress box top-right: two-row status counts (Look t921u) */
-          const counts = {};
-          list.forEach(r => {
-            const key = (r.status || '').trim().toLowerCase() || 'idle';
-            counts[key] = (counts[key] || 0) + 1;
-          });
-          if (statusEl) {
-            statusEl.className = 'status-counts';
-            statusEl.innerHTML = buildStatusCountsHtml(counts);
-          }
-
-          const shown = list.slice().reverse(); /* 唔限五行，房內 scroll 睇晒 */
-          const linesHtml = shown.map(r => {
-            const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
-            let detail = '';
-            /* Always lead with task/project name (Look t939u); append summary after */
-            if (r.task && r.summary && r.summary !== r.task) detail = r.task + ' · ' + r.summary;
-            else detail = r.task || r.summary || r.notes || '';
-            return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
-          });
-          tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
-        });
-
-        /* Meeting rooms: same Sheet rows + progress-box status counts (Look t921u) */
-        document.querySelectorAll('.room.meeting[data-meeting-target]').forEach(el => {
-          const target = el.dataset.meetingTarget;
-          const list = byBot[target] || [];
-          const statusEl = el.querySelector('[data-status]');
-          const meetTasks = el.querySelector('[data-meet-tasks]');
-          if (!list.length) {
-            if (statusEl) {
-              statusEl.className = 'status-counts';
-              statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
-            }
-            if (meetTasks) meetTasks.innerHTML = '（暫無項目）';
-            return;
-          }
-          const counts = {};
-          list.forEach(r => {
-            const key = (r.status || '').trim().toLowerCase() || 'idle';
-            counts[key] = (counts[key] || 0) + 1;
-          });
-          if (statusEl) {
-            statusEl.className = 'status-counts';
-            statusEl.innerHTML = buildStatusCountsHtml(counts);
-          }
-          if (!meetTasks) return;
-          const shown = list.slice().reverse();
-          meetTasks.innerHTML = shown.map(r => {
-            const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
-            let detail = '';
-            /* Always lead with task/project name (Look t939u); append summary after */
-            if (r.task && r.summary && r.summary !== r.task) detail = r.task + ' · ' + r.summary;
-            else detail = r.task || r.summary || r.notes || '';
-            return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
-          }).join('');
-        });
-      } catch (e) {
-        document.querySelectorAll('.room[data-bot] [data-tasks]').forEach(el => {
-          el.innerHTML = '<div class="prog-head">最新進度</div>讀取失敗（請確認 Sheet 公開可檢視）';
-        });
-        document.querySelectorAll('.room.meeting [data-meet-tasks]').forEach(el => {
-          el.textContent = '讀取失敗（請確認 Sheet 公開可檢視）';
-        });
+      if (IS_PUBLIC_PAGES) {
+        const ban = document.getElementById('localOnlyBanner');
+        if (ban) ban.hidden = false;
+        const badge = document.querySelector('header .badge');
+        if (badge) badge.textContent = 'DEMO · 無私人資料';
+        applyTaskRows(DEMO_TASK_ROWS);
+        return;
       }
+      /* Non-Pages: Sheet fetch retired. Prefer local 12_AI_Office package. */
+      applyTaskRows(DEMO_TASK_ROWS);
+      document.querySelectorAll('.room[data-bot] [data-tasks]').forEach(el => {
+        if (el.textContent.includes('暫無手上任務')) {
+          el.innerHTML = '<div class="prog-head">最新進度</div>本地版請開 OneDrive／堅果雲 12_AI_Office／ai-office-pixel-map.html';
+        }
+      });
     }
 
     /* Meeting progress-wrap: top = label-top + gap only (chrome in wrap; no phantom label-h — t924u);
@@ -1540,8 +1549,7 @@
     }
 
 
-    const USAGE_SHEET_ID = '1kA0LedNEBXJhUhMKuY2XQxdugtC8_UhsUtgt5aljOLo';
-    const USAGE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${USAGE_SHEET_ID}/gviz/tq?tqx=out:csv`;
+    const USAGE_SHEET_URL = null; /* disabled — local package uses ./data/usage.json */
 
     function usageFillClass(pct) {
       const n = Number(pct);
@@ -1553,58 +1561,11 @@
     async function loadUsage() {
       const el = document.getElementById('usageBar');
       if (!el) return;
-      try {
-        const res = await fetch(USAGE_SHEET_URL);
-        if (!res.ok) throw new Error('fetch');
-        const csv = await res.text();
-        const lines = csv.trim().split(/\r?\n/).filter(Boolean);
-        if (lines.length < 2) {
-          el.innerHTML = '<div class="usage-title">使用情況<span>Sheet</span></div><div class="usage-body"><p class="usage-muted">暫無用量記錄</p></div>';
-          return;
-        }
-        const cols = parseCsvLine(lines[lines.length - 1]).map(c => c.replace(/^"|"$/g, ''));
-        const sg = cols[1] || '0';
-        const bot = cols[3] || '0';
-        const imagine = Number(cols[5]) || 0;
-        const builder = Number(cols[6]) || 0;
-        const chat = Number(cols[7]) || 0;
-        const botCls = usageFillClass(bot);
-        el.innerHTML = `
-          <div class="usage-title">使用情況<span>Sheet</span></div>
-          <div class="usage-body">
-            <div class="usage-grid">
-              <div class="usage-block">
-                <div class="usage-label">每週 SuperGrok Plus</div>
-                <div class="usage-row">
-                  <div class="usage-pct">${sg}%<em>已使用</em></div>
-                  <div class="usage-reset">重設 ${cols[2] || '—'}</div>
-                </div>
-                <div class="usage-meter" aria-label="SuperGrok Plus 分段用量">
-                  <i class="seg-imagine" style="width:${Math.min(100, imagine)}%"></i>
-                  <i class="seg-builder" style="width:${Math.min(100, builder)}%"></i>
-                  <i class="seg-chat" style="width:${Math.min(100, chat)}%"></i>
-                </div>
-                <div class="usage-chips">
-                  <span class="dot dot-imagine">●</span> Imagine ${imagine}%　
-                  <span class="dot dot-builder">●</span> App Builder ${builder}%　
-                  <span class="dot dot-chat">●</span> 對話 ${chat}%
-                </div>
-              </div>
-              <div class="usage-block">
-                <div class="usage-label">每週 Grok Bot</div>
-                <div class="usage-row">
-                  <div class="usage-pct">${bot}%<em>已使用</em></div>
-                  <div class="usage-reset">重設 ${cols[4] || '—'}</div>
-                </div>
-                <div class="usage-meter"><i class="${botCls}" style="width:${Math.min(100, Number(bot) || 0)}%"></i></div>
-              </div>
-            </div>
-            <p class="usage-footer">最後更新：${cols[0] || '—'}</p>
-          </div>
-        `;
-      } catch (e) {
-        el.innerHTML = '<div class="usage-title">使用情況<span>Sheet</span></div><div class="usage-body"><p class="usage-err">讀取用量失敗（確認 Sheet 公開／Anyone with link）</p></div>';
+      if (IS_PUBLIC_PAGES) {
+        el.innerHTML = '<div class="usage-title">使用情況<span>DEMO</span></div><div class="usage-body"><p class="usage-muted">公開頁唔顯示私人用量 · 請開本地 12_AI_Office</p></div>';
+        return;
       }
+      el.innerHTML = '<div class="usage-title">使用情況<span>本地</span></div><div class="usage-body"><p class="usage-muted">請開本地 12_AI_Office（唔再由公開頁讀 Sheet）</p></div>';
     }
 
     buildCampus();
@@ -1612,8 +1573,10 @@
     scheduleMeetingGaps();
     loadSheet();
     loadUsage();
-    setInterval(loadSheet, 60000);
-    setInterval(loadUsage, 60000);
+    if (!IS_PUBLIC_PAGES) {
+      setInterval(loadSheet, 60000);
+      setInterval(loadUsage, 60000);
+    }
     window.addEventListener('resize', scheduleMeetingGaps);
     document.querySelectorAll('.meeting-vignette').forEach(img => {
       if (img.complete) return;
