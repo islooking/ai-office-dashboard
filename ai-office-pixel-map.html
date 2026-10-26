@@ -374,13 +374,20 @@
       height: 8px;
       border-radius: 4px;
       overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
     }
     .usage-meter > i {
       display: block;
       height: 100%;
-      background: #60a5fa;
+      flex: 0 0 auto;
       width: 0%;
+      background: #60a5fa;
     }
+    .usage-meter > i.seg-imagine { background: #60a5fa; }
+    .usage-meter > i.seg-builder { background: #3b82f6; }
+    .usage-meter > i.seg-chat { background: #1d4ed8; }
     .usage-meter > i.warn { background: #fbbf24; }
     .usage-meter > i.hot { background: #f87171; }
     .usage-chips {
@@ -389,7 +396,10 @@
       color: #94a3b8;
       line-height: 1.4;
     }
-    .usage-chips b { color: #60a5fa; font-weight: 600; }
+    .usage-chips .dot { font-weight: 600; }
+    .usage-chips .dot-imagine { color: #60a5fa; }
+    .usage-chips .dot-builder { color: #3b82f6; }
+    .usage-chips .dot-chat { color: #1d4ed8; }
     .usage-footer {
       margin: 8px 0 0;
       font-size: 0.68rem;
@@ -1106,7 +1116,9 @@
         const cols = parseCsvLine(lines[lines.length - 1]).map(c => c.replace(/^"|"$/g, ''));
         const sg = cols[1] || '0';
         const bot = cols[3] || '0';
-        const sgCls = usageFillClass(sg);
+        const imagine = Number(cols[5]) || 0;
+        const builder = Number(cols[6]) || 0;
+        const chat = Number(cols[7]) || 0;
         const botCls = usageFillClass(bot);
         el.innerHTML = `
           <h2>使用情況<span>Sheet 驅動</span></h2>
@@ -1117,11 +1129,15 @@
                 <div class="usage-pct">${sg}%<em>已使用</em></div>
                 <div class="usage-reset">重設 ${cols[2] || '—'}</div>
               </div>
-              <div class="usage-meter"><i class="${sgCls}" style="width:${Math.min(100, Number(sg) || 0)}%"></i></div>
+              <div class="usage-meter" aria-label="SuperGrok Plus 分段用量">
+                <i class="seg-imagine" style="width:${Math.min(100, imagine)}%"></i>
+                <i class="seg-builder" style="width:${Math.min(100, builder)}%"></i>
+                <i class="seg-chat" style="width:${Math.min(100, chat)}%"></i>
+              </div>
               <div class="usage-chips">
-                <b>●</b> Imagine ${cols[5] || 0}%　
-                <b>●</b> App Builder ${cols[6] || 0}%　
-                <b>●</b> 對話 ${cols[7] || 0}%
+                <span class="dot dot-imagine">●</span> Imagine ${imagine}%　
+                <span class="dot dot-builder">●</span> App Builder ${builder}%　
+                <span class="dot dot-chat">●</span> 對話 ${chat}%
               </div>
             </div>
             <div class="usage-block">
