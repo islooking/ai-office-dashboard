@@ -1438,9 +1438,9 @@
           const linesHtml = shown.map(r => {
             const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
             let detail = '';
-            if (r.status === 'done' && r.summary) detail = r.summary;
-            else if ((r.status === 'hold' || r.status === 'cancelled') && (r.notes || r.summary)) detail = r.notes || r.summary;
-            else detail = r.task || r.summary || '';
+            /* Always lead with task/project name (Look t939u); append summary after */
+            if (r.task && r.summary && r.summary !== r.task) detail = r.task + ' · ' + r.summary;
+            else detail = r.task || r.summary || r.notes || '';
             return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
           });
           tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
@@ -1474,9 +1474,9 @@
           meetTasks.innerHTML = shown.map(r => {
             const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
             let detail = '';
-            if (r.status === 'done' && r.summary) detail = r.summary;
-            else if ((r.status === 'hold' || r.status === 'cancelled') && (r.notes || r.summary)) detail = r.notes || r.summary;
-            else detail = r.task || r.summary || '';
+            /* Always lead with task/project name (Look t939u); append summary after */
+            if (r.task && r.summary && r.summary !== r.task) detail = r.task + ' · ' + r.summary;
+            else detail = r.task || r.summary || r.notes || '';
             return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
           }).join('');
         });
