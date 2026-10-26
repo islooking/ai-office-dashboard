@@ -173,7 +173,8 @@
     .progress-chrome {
       display: flex;
       flex-direction: row;
-      align-items: flex-start;
+      flex-wrap: nowrap;
+      align-items: flex-end; /* meet-kind 同 status 下行同一行 (Look t923u) */
       width: 100%;
       gap: 6px;
       flex-shrink: 0;
@@ -393,7 +394,7 @@
     }
     .progress-wrap .meet-kind {
       display: inline-block;
-      align-self: flex-start; /* outside dark box, top-left (Look t921u/t922u) */
+      align-self: flex-end; /* 同 status 下行同一行 (Look t923u) */
       width: fit-content;
       max-width: max-content;
       font-size: 0.7rem; /* same as .meet-roster / host (Look t911u) */
