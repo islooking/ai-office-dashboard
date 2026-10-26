@@ -622,30 +622,48 @@
     }
     .routine-row {
       display: grid;
-      grid-template-columns: 28px minmax(64px, 88px) minmax(120px, 1.4fr) minmax(110px, 1fr) auto;
-      gap: 8px 10px;
+      grid-template-columns: 24px minmax(72px, 100px) minmax(100px, 1.5fr) minmax(96px, 1fr);
+      gap: 6px 8px;
       align-items: center;
-      padding: 8px 10px;
+      padding: 6px 8px;
       border-bottom: 1px solid rgba(148,163,184,.14);
       cursor: pointer;
-      min-width: 520px;
+      min-width: 0;
       transition: background .1s ease;
     }
     .routine-row:last-child { border-bottom: none; }
     .routine-row:hover { background: rgba(148,163,184,.1); }
     .routine-row .rt-sprite {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       object-fit: contain;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25));
     }
     .routine-row .rt-bot {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
       font-size: 0.7rem;
       font-weight: 700;
       color: #e2e8f0;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .routine-row .rt-dot {
+      flex: 0 0 auto;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.25);
+      box-shadow: 0 1px 0 rgba(0,0,0,.2);
+    }
+    .routine-row .rt-dot.enabled { background: #4ade80; }
+    .routine-row .rt-dot.paused { background: #fb923c; }
+    .routine-row .rt-bot-label {
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -662,37 +680,13 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    .routine-row .rt-pill {
-      font-size: 0.66rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 3px;
-      border: 1px solid rgba(0,0,0,.12);
-      white-space: nowrap;
-      justify-self: end;
-    }
-    .routine-row .rt-pill.enabled {
-      background: #4ade80;
-      color: #14532d;
-    }
-    .routine-row .rt-pill.paused {
-      background: #fb923c;
-      color: #7c2d12;
+      text-align: right;
     }
     .routine-empty {
       padding: 12px 10px;
       font-size: 0.78rem;
       color: #94a3b8;
       margin: 0;
-    }
-    @media (max-width: 520px) {
-      .routine-row {
-        grid-template-columns: 28px minmax(56px, 72px) minmax(100px, 1.2fr) minmax(96px, 1fr) auto;
-        gap: 6px 8px;
-        padding: 7px 8px;
-        min-width: 460px;
-      }
     }
 
     .note {
@@ -1374,15 +1368,13 @@
       body.innerHTML = ROUTINES.map(r => {
         const bot = byName[r.bot];
         const sprite = (r.sprite || (bot && bot.sprite) || 'zhizi-desk.png');
-        const pillCls = r.status === 'paused' ? 'paused' : 'enabled';
-        const pillLabel = r.status === 'paused' ? '暫停' : '開';
+        const dotCls = r.status === 'paused' ? 'paused' : 'enabled';
         const idAttr = bot && bot.id ? ` data-agent-id="${bot.id}"` : '';
         return `<div class="routine-row"${idAttr} role="button" tabindex="0">
-          <img class="rt-sprite" src="pixel-assets/${sprite}" alt="" width="28" height="28" />
-          <span class="rt-bot">${r.bot}</span>
+          <img class="rt-sprite" src="pixel-assets/${sprite}" alt="" width="24" height="24" />
+          <span class="rt-bot"><span class="rt-dot ${dotCls}" title="${dotCls === 'paused' ? '暫停' : '開'}" aria-label="${dotCls === 'paused' ? '暫停' : '開'}"></span><span class="rt-bot-label">${r.bot}</span></span>
           <span class="rt-name">${r.name}</span>
           <span class="rt-sched">${r.schedule}</span>
-          <span class="rt-pill ${pillCls}">${pillLabel}</span>
         </div>`;
       }).join('');
       body.querySelectorAll('.routine-row[data-agent-id]').forEach(row => {
