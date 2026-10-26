@@ -343,37 +343,22 @@
       text-decoration-thickness: 2px;
       text-decoration-color: #c4b5fd;
     }
-    .progress .meet-kind-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      align-self: flex-start; /* progress is flex column stretch */
-      gap: 5px;
-      margin-bottom: 5px;
-      width: fit-content;
-      max-width: 100%;
-    }
-    .progress .meet-brand {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #5b21b6;
-      letter-spacing: .02em;
-      line-height: 1.2;
-    }
     .progress .meet-kind {
       display: inline-block;
+      align-self: flex-start; /* hug label — progress is flex column stretch */
       width: fit-content;
       max-width: max-content;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 900;
       color: #f5f3ff;
       background: #6d28d9;
       padding: 2px 8px;
       border-radius: 3px;
       border: 1px solid #5b21b6;
-      margin: 0;
-      letter-spacing: .06em;
+      margin-bottom: 5px;
+      letter-spacing: .04em;
       box-shadow: 0 1px 0 rgba(0,0,0,.25);
+      white-space: nowrap;
     }
     .progress .meet-roster .roster-sep {
       color: #64748b;
@@ -1014,9 +999,10 @@
           <div class="room-name">${m.name}</div>
           <span class="status meeting" data-status>會議室</span>
           <div class="progress" data-tasks>
-            <div class="meet-kind-row">${m.brandPrefix ? `<span class="meet-brand">${m.brandPrefix}</span>` : ''}<div class="meet-kind">會議室</div></div>
+            <div class="meet-kind">${m.brandPrefix ? m.brandPrefix + '會議室' : '會議室'}</div>
             <div class="meet-roster">${meetingRosterHtml(m)}</div>
             <div class="prog-head">最新進度</div>
+            <div data-meet-tasks>（暫無項目）</div>
           </div>
           ${stage}
         `;
@@ -1026,6 +1012,7 @@
       const el = document.createElement('div');
       el.className = 'room meeting';
       el.dataset.meeting = m.key;
+      el.dataset.meetingTarget = m.name; /* Sheet target_bot = room name */
       el.style.cssText = checker(m.tint);
       /* no grokbot deep-link — meeting rooms are multi-bot */
       el.innerHTML = meetingRoomHtml(m);
@@ -1169,9 +1156,33 @@
           });
           tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
         });
+
+        /* Meeting rooms: same Sheet rows, target_bot = room name (抉擇塔／磁鐵改靚／品牌網站) */
+        document.querySelectorAll('.room.meeting[data-meeting-target]').forEach(el => {
+          const target = el.dataset.meetingTarget;
+          const list = byBot[target] || [];
+          const meetTasks = el.querySelector('[data-meet-tasks]');
+          if (!meetTasks) return;
+          if (!list.length) {
+            meetTasks.innerHTML = '（暫無項目）';
+            return;
+          }
+          const shown = list.slice().reverse();
+          meetTasks.innerHTML = shown.map(r => {
+            const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
+            let detail = '';
+            if (r.status === 'done' && r.summary) detail = r.summary;
+            else if (r.status === 'hold' && (r.notes || r.summary)) detail = r.notes || r.summary;
+            else detail = r.task || r.summary || '';
+            return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
+          }).join('');
+        });
       } catch (e) {
         document.querySelectorAll('.room[data-bot] [data-tasks]').forEach(el => {
           el.innerHTML = '<div class="prog-head">最新進度</div>讀取失敗（請確認 Sheet 公開可檢視）';
+        });
+        document.querySelectorAll('.room.meeting [data-meet-tasks]').forEach(el => {
+          el.textContent = '讀取失敗（請確認 Sheet 公開可檢視）';
         });
       }
     }
