@@ -329,15 +329,22 @@
       font-weight: 800;
       padding: 1px 5px;
       border-radius: 3px;
-      background: #fde68a;
-      color: #78350f;
-      border: 1px solid rgba(120,53,15,.25);
+      background: #c4b5fd;
+      color: #4c1d95;
+      border: 1px solid rgba(76,29,149,.28);
       margin-right: 2px;
       letter-spacing: .02em;
     }
     .progress .meet-roster .host-name {
       font-weight: 800;
-      color: #fde68a;
+      color: #ddd6fe;
+    }
+    .progress .meet-kind {
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: #c4b5fd;
+      margin-bottom: 4px;
+      letter-spacing: .04em;
     }
     .progress .meet-roster .roster-sep {
       color: #64748b;
@@ -976,10 +983,9 @@
           <div class="room-name">${m.name}</div>
           <span class="status meeting" data-status>會議室</span>
           <div class="progress" data-tasks>
+            <div class="meet-kind">會議室</div>
             <div class="meet-roster">${meetingRosterHtml(m)}</div>
             <div class="prog-head">最新進度</div>
-            <div class="task-line"><span class="task-meta idle">會議室</span> · ${m.blurb}</div>
-            <div class="task-more">座位最多 6 人 · 1–3 同邊 · 4＝2+2 · 分身可跨房</div>
           </div>
           ${stage}
         `;
