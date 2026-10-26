@@ -381,7 +381,14 @@
     }
 
     async function loadSheet() {
-      const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
+      /* PUBLIC DEMO — no Sheet fetch (2026-10-27) */
+      if (!SHEET_ID) {
+        document.querySelectorAll('.card .status, .card [data-status]').forEach(()=>{});
+        const note = document.querySelector('.note');
+        if (note) note.textContent = '公開 demo：唔再讀私人 Sheet。真板請開 OneDrive 12_Phone_Dashboards/01_AI_Office。';
+        return;
+      }
+      const SHEET_ID = null; /* public Pages: no personal Sheet */
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Dashboard_Tasks`;
       const statusEls = document.querySelectorAll('.bot-status');
       try {
@@ -451,7 +458,9 @@
     }
 
     async function loadUsage() {
-      const USAGE_SHEET_ID = '1kA0LedNEBXJhUhMKuY2XQxdugtC8_UhsUtgt5aljOLo';
+      if (!USAGE_SHEET_ID) { const el=document.getElementById("usageDisplay"); if(el) el.innerHTML="<p style=\"color:#94a3b8\">公開頁唔顯示私人用量 · 請開本地 12_Phone_Dashboards</p>"; return; }
+      const USAGE_SHEET_ID = null; /* public Pages: no personal Sheet */
+    async function __guardUsage(){ if(!USAGE_SHEET_ID){ const el=document.getElementById('usageDisplay'); if(el) el.innerHTML='<p style="color:#94a3b8">公開頁唔顯示私人用量</p>'; return true;} return false;}
       const url = `https://docs.google.com/spreadsheets/d/${USAGE_SHEET_ID}/gviz/tq?tqx=out:csv`;
       try {
         const res = await fetch(url);
