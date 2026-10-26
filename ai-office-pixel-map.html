@@ -180,6 +180,7 @@
     .status.pending, .status-chip.pending { background: #fbbf24; color: #78350f; }
     .status.hold, .status-chip.hold { background: #fb923c; color: #7c2d12; }
     .status.error, .status-chip.error { background: #f87171; color: #7f1d1d; }
+    .status.cancelled, .status-chip.cancelled { background: #a1a1aa; color: #18181b; }
     .status.idle, .status-chip.idle { background: #94a3b8; color: #0f172a; }
     .status.meeting { background: #c4b5fd; color: #4c1d95; }
     .furn-layer {
@@ -391,6 +392,7 @@
     .progress .task-meta.pending { background: #fbbf24; color: #78350f; }
     .progress .task-meta.hold { background: #fb923c; color: #7c2d12; }
     .progress .task-meta.error { background: #f87171; color: #7f1d1d; }
+    .progress .task-meta.cancelled { background: #a1a1aa; color: #18181b; }
     .progress .task-meta.idle { background: #94a3b8; color: #0f172a; }
     .progress .task-more {
       margin-top: 4px;
@@ -780,7 +782,7 @@
   </header>
 
   <div class="campus" id="campus" aria-label="像素辦公室全院地圖"></div>
-  <p class="note">點個人房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error），畫面顯示中文。三間會議室已上線（抉擇塔置頂；Parsecreation 兩間置底）；同一 bot 可同時出現喺辦公室同多間會議室。</p>
+  <p class="note">點個人房間開對應 Grok Bot。狀態碼英文（pending／doing／hold／done／error／cancelled），畫面顯示中文。三間會議室已上線（抉擇塔置頂；Parsecreation 兩間置底）；同一 bot 可同時出現喺辦公室同多間會議室。</p>
 
   <script>
     const SHEET_ID = '12lR4PFfLetC4lbzQJta6JyAuV44ohui36KM1OXvt58M';
@@ -790,7 +792,8 @@
       doing:   { label: '進行中', cls: 'doing' },
       hold:    { label: '暫停', cls: 'hold' },
       done:    { label: '完成', cls: 'done' },
-      error:   { label: '失敗', cls: 'error' }
+      error:   { label: '失敗', cls: 'error' },
+      cancelled: { label: '取消', cls: 'cancelled' }
     };
     const BOTS = [
       { wing: '大內／決策', name: '智子', wingLabel: '大內總管', sprite: 'zhizi-desk.png', id: '227130dc-dae2-45ff-b3b1-7bccad7b6fa6', tint: '#c4b5fd' },
@@ -1130,7 +1133,7 @@
             const key = (r.status || '').trim().toLowerCase() || 'idle';
             counts[key] = (counts[key] || 0) + 1;
           });
-          const order = ['doing', 'pending', 'hold', 'error', 'done'];
+          const order = ['doing', 'pending', 'hold', 'error', 'cancelled', 'done'];
           const chips = [];
           order.forEach(k => {
             if (!counts[k]) return;
@@ -1150,7 +1153,7 @@
             const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
             let detail = '';
             if (r.status === 'done' && r.summary) detail = r.summary;
-            else if (r.status === 'hold' && (r.notes || r.summary)) detail = r.notes || r.summary;
+            else if ((r.status === 'hold' || r.status === 'cancelled') && (r.notes || r.summary)) detail = r.notes || r.summary;
             else detail = r.task || r.summary || '';
             return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
           });
@@ -1176,7 +1179,7 @@
             const key = (r.status || '').trim().toLowerCase() || 'idle';
             counts[key] = (counts[key] || 0) + 1;
           });
-          const order = ['doing', 'pending', 'hold', 'error', 'done'];
+          const order = ['doing', 'pending', 'hold', 'error', 'cancelled', 'done'];
           const chips = [];
           order.forEach(k => {
             if (!counts[k]) return;
@@ -1198,7 +1201,7 @@
             const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
             let detail = '';
             if (r.status === 'done' && r.summary) detail = r.summary;
-            else if (r.status === 'hold' && (r.notes || r.summary)) detail = r.notes || r.summary;
+            else if ((r.status === 'hold' || r.status === 'cancelled') && (r.notes || r.summary)) detail = r.notes || r.summary;
             else detail = r.task || r.summary || '';
             return `<div class="task-line"><span class="task-meta ${m.cls}">${m.label}</span>${detail ? ' · ' + detail : ''}</div>`;
           }).join('');

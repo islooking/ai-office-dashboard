@@ -371,7 +371,8 @@
       doing:   { label: '進行中', color: '#38bdf8' },
       hold:    { label: '暫停',   color: '#fb923c' },
       done:    { label: '完成',   color: '#4ade80' },
-      error:   { label: '失敗',   color: '#f87171' }
+      error:   { label: '失敗',   color: '#f87171' },
+      cancelled: { label: '取消', color: '#a1a1aa' }
     };
 
     function statusMeta(raw) {
@@ -425,7 +426,7 @@
             let detail = '';
             if (r.status === 'done' && r.summary) {
               detail = r.summary;
-            } else if (r.status === 'hold' && (r.notes || r.summary)) {
+            } else if ((r.status === 'hold' || r.status === 'cancelled') && (r.notes || r.summary)) {
               detail = r.notes || r.summary;
             } else if (r.task) {
               detail = r.task;
