@@ -311,6 +311,93 @@
       color: #94a3b8;
       font-size: 0.64rem;
     }
+
+    /* Usage strip above 抉擇塔 (Look t890u) */
+    .usage-bar {
+      grid-column: 1 / -1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #e2e8f0;
+    }
+    .usage-bar h2 {
+      margin: 0 0 10px;
+      font-size: 0.86rem;
+      color: #7dd3fc;
+      font-weight: 700;
+    }
+    .usage-bar h2 span {
+      font-size: 0.68rem;
+      color: #64748b;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+    .usage-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 18px;
+    }
+    @media (max-width: 720px) {
+      .usage-grid { grid-template-columns: 1fr; }
+    }
+    .usage-block .usage-label {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .usage-block .usage-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 5px;
+      gap: 8px;
+    }
+    .usage-block .usage-pct {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .usage-block .usage-pct em {
+      font-style: normal;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: #94a3b8;
+      margin-left: 4px;
+    }
+    .usage-block .usage-reset {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+    .usage-meter {
+      background: #334155;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .usage-meter > i {
+      display: block;
+      height: 100%;
+      background: #60a5fa;
+      width: 0%;
+    }
+    .usage-meter > i.warn { background: #fbbf24; }
+    .usage-meter > i.hot { background: #f87171; }
+    .usage-chips {
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    .usage-chips b { color: #60a5fa; font-weight: 600; }
+    .usage-footer {
+      margin: 8px 0 0;
+      font-size: 0.68rem;
+      color: #64748b;
+    }
+    .usage-bar .usage-err { color: #f87171; font-size: 0.8rem; margin: 0; }
+    .usage-bar .usage-muted { color: #94a3b8; font-size: 0.8rem; margin: 0; }
+
     .note {
       max-width: 980px; margin: 0 auto 40px; padding: 0 16px;
       color: var(--muted); font-size: 0.84rem; line-height: 1.5; text-align: center;
@@ -855,6 +942,13 @@
       const root = document.getElementById('campus');
       root.innerHTML = '';
 
+      /* 0) Usage strip directly above 抉擇塔 (Look t890u) */
+      const usage = document.createElement('div');
+      usage.className = 'usage-bar';
+      usage.id = 'usageBar';
+      usage.innerHTML = '<h2>使用情況<span>Sheet 驅動</span></h2><p class="usage-muted">載入用量中...</p>';
+      root.appendChild(usage);
+
       /* 1) 抉擇塔 above all individual rooms */
       const wingTop = document.createElement('div');
       wingTop.className = 'wing';
@@ -986,10 +1080,72 @@
       requestAnimationFrame(syncMeetingGaps);
     }
 
+
+    const USAGE_SHEET_ID = '1kA0LedNEBXJhUhMKuY2XQxdugtC8_UhsUtgt5aljOLo';
+    const USAGE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${USAGE_SHEET_ID}/gviz/tq?tqx=out:csv`;
+
+    function usageFillClass(pct) {
+      const n = Number(pct);
+      if (n >= 85) return 'hot';
+      if (n >= 60) return 'warn';
+      return '';
+    }
+
+    async function loadUsage() {
+      const el = document.getElementById('usageBar');
+      if (!el) return;
+      try {
+        const res = await fetch(USAGE_SHEET_URL);
+        if (!res.ok) throw new Error('fetch');
+        const csv = await res.text();
+        const lines = csv.trim().split(/\r?\n/).filter(Boolean);
+        if (lines.length < 2) {
+          el.innerHTML = '<h2>使用情況<span>Sheet 驅動</span></h2><p class="usage-muted">暫無用量記錄</p>';
+          return;
+        }
+        const cols = parseCsvLine(lines[lines.length - 1]).map(c => c.replace(/^"|"$/g, ''));
+        const sg = cols[1] || '0';
+        const bot = cols[3] || '0';
+        const sgCls = usageFillClass(sg);
+        const botCls = usageFillClass(bot);
+        el.innerHTML = `
+          <h2>使用情況<span>Sheet 驅動</span></h2>
+          <div class="usage-grid">
+            <div class="usage-block">
+              <div class="usage-label">每週 SuperGrok Plus</div>
+              <div class="usage-row">
+                <div class="usage-pct">${sg}%<em>已使用</em></div>
+                <div class="usage-reset">重設 ${cols[2] || '—'}</div>
+              </div>
+              <div class="usage-meter"><i class="${sgCls}" style="width:${Math.min(100, Number(sg) || 0)}%"></i></div>
+              <div class="usage-chips">
+                <b>●</b> Imagine ${cols[5] || 0}%　
+                <b>●</b> App Builder ${cols[6] || 0}%　
+                <b>●</b> 對話 ${cols[7] || 0}%
+              </div>
+            </div>
+            <div class="usage-block">
+              <div class="usage-label">每週 Grok Bot</div>
+              <div class="usage-row">
+                <div class="usage-pct">${bot}%<em>已使用</em></div>
+                <div class="usage-reset">重設 ${cols[4] || '—'}</div>
+              </div>
+              <div class="usage-meter"><i class="${botCls}" style="width:${Math.min(100, Number(bot) || 0)}%"></i></div>
+            </div>
+          </div>
+          <p class="usage-footer">最後更新：${cols[0] || '—'}</p>
+        `;
+      } catch (e) {
+        el.innerHTML = '<h2>使用情況<span>Sheet 驅動</span></h2><p class="usage-err">讀取用量失敗（確認 Sheet 公開／Anyone with link）</p>';
+      }
+    }
+
     buildCampus();
     scheduleMeetingGaps();
     loadSheet();
+    loadUsage();
     setInterval(loadSheet, 60000);
+    setInterval(loadUsage, 60000);
     window.addEventListener('resize', scheduleMeetingGaps);
     document.querySelectorAll('.meeting-vignette').forEach(img => {
       if (img.complete) return;
