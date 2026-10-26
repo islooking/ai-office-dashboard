@@ -312,6 +312,37 @@
       top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
       bottom: var(--progress-bottom);
     }
+    .progress .meet-roster {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 6px;
+      line-height: 1.45;
+      flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .progress .meet-roster .host-mark {
+      display: inline-block;
+      font-size: 0.58rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: #fde68a;
+      color: #78350f;
+      border: 1px solid rgba(120,53,15,.25);
+      margin-right: 2px;
+      letter-spacing: .02em;
+    }
+    .progress .meet-roster .host-name {
+      font-weight: 800;
+      color: #fde68a;
+    }
+    .progress .meet-roster .roster-sep {
+      color: #64748b;
+      font-weight: 400;
+    }
     .progress .prog-head {
       font-size: 0.62rem;
       font-weight: 700;
@@ -766,6 +797,7 @@
         {
           key: 'decision-tower',
           name: '抉擇塔',
+          host: '決策官',
           tint: '#ddd6fe',
           vignette: 'meeting-vignette-2.png',
           members: [
@@ -780,6 +812,7 @@
         {
           key: 'parse-magnet',
           name: '磁鐵改靚',
+          host: '藍圖官',
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
           members: [
@@ -794,6 +827,7 @@
         {
           key: 'parse-brand',
           name: '品牌網站',
+          host: '藍圖官',
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
           members: [
@@ -879,9 +913,21 @@
       return `<img class="meet-prop ${side}" style="left:${leftPct}%;" src="pixel-assets/${prop}?v=${SEAT_V}" alt="" />`;
     }
 
+    function meetingRosterHtml(m) {
+      const host = m.host || '';
+      const others = m.members.map(x => x.name).filter(n => n !== host);
+      const ordered = host ? [host, ...others] : m.members.map(x => x.name);
+      const parts = ordered.map((n, i) => {
+        if (host && n === host && i === 0) {
+          return `<span class="host-mark">主持</span><span class="host-name">${n}</span>`;
+        }
+        return `<span>${n}</span>`;
+      });
+      return parts.join('<span class="roster-sep"> · </span>');
+    }
+
     function meetingRoomHtml(m) {
       const { back, front } = splitSeats(m.members);
-      const names = m.members.map(x => x.name).join('、');
       let stage;
       if (m.vignette) {
         /* One composed vignette + HTML name labels tight beside each head */
@@ -930,9 +976,9 @@
           <div class="room-name">${m.name}</div>
           <span class="status meeting" data-status>會議室</span>
           <div class="progress" data-tasks>
+            <div class="meet-roster">${meetingRosterHtml(m)}</div>
             <div class="prog-head">最新進度</div>
-            <div class="task-line"><span class="task-meta">會議室</span> · ${m.blurb}</div>
-            <div class="task-line">出席：${names}</div>
+            <div class="task-line"><span class="task-meta idle">會議室</span> · ${m.blurb}</div>
             <div class="task-more">座位最多 6 人 · 1–3 同邊 · 4＝2+2 · 分身可跨房</div>
           </div>
           ${stage}
