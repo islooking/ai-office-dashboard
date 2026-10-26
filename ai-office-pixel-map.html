@@ -137,28 +137,46 @@
       padding: 2px 6px;
       border-radius: 3px;
       border: 1px solid rgba(255,255,255,.16);
-      max-width: calc(100% - 96px);
+      max-width: calc(100% - 148px); /* leave space for status count chips */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .status {
+    .status,
+    .status-counts {
       position: absolute;
       top: 56px; /* 文件櫃腳對落少少，唔重疊 */
       right: 8px;
       z-index: 4;
       font-size: 0.66rem;
       font-weight: 700;
+    }
+    .status {
       padding: 2px 6px;
       border-radius: 3px;
       border: 1px solid rgba(0,0,0,.12);
     }
-    .status.doing { background: #38bdf8; color: #0c4a6e; }
-    .status.done { background: #4ade80; color: #14532d; }
-    .status.pending { background: #fbbf24; color: #78350f; }
-    .status.hold { background: #fb923c; color: #7c2d12; }
-    .status.error { background: #f87171; color: #7f1d1d; }
-    .status.idle { background: #94a3b8; color: #0f172a; }
+    .status-counts {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 3px;
+      max-width: 52%;
+    }
+    .status-counts .status-chip {
+      padding: 2px 5px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,.12);
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .status.doing, .status-chip.doing { background: #38bdf8; color: #0c4a6e; }
+    .status.done, .status-chip.done { background: #4ade80; color: #14532d; }
+    .status.pending, .status-chip.pending { background: #fbbf24; color: #78350f; }
+    .status.hold, .status-chip.hold { background: #fb923c; color: #7c2d12; }
+    .status.error, .status-chip.error { background: #f87171; color: #7f1d1d; }
+    .status.idle, .status-chip.idle { background: #94a3b8; color: #0f172a; }
+    .status.meeting { background: #c4b5fd; color: #4c1d95; }
     .furn-layer {
       position: absolute;
       inset: 0;
@@ -935,7 +953,7 @@
             <img class="furn furn-coffee" src="pixel-assets/furn-sofas-tea.png?v=${FURN_V}" alt="" />
           </div>
           <div class="room-name">${b.wingLabel} · ${b.name}</div>
-          <span class="status idle" data-status>暫無</span>
+          <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
           <div class="desk-zone">
             <img class="sprite" src="pixel-assets/${b.sprite}?v=${SPRITE_V}" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
@@ -1015,15 +1033,31 @@
           const statusEl = el.querySelector('[data-status]');
           const tasksEl = el.querySelector('[data-tasks]');
           if (!list.length) {
-            statusEl.textContent = '暫無';
-            statusEl.className = 'status idle';
+            statusEl.className = 'status-counts';
+            statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
             tasksEl.innerHTML = '<div class="prog-head">最新進度</div>（暫無手上任務）';
             return;
           }
-          const latest = list[list.length - 1];
-          const meta = STATUS_META[latest.status] || { label: latest.status || '—', cls: 'idle' };
-          statusEl.textContent = meta.label;
-          statusEl.className = 'status ' + meta.cls;
+          /* Right corner: count each status that exists (Look t892u) */
+          const counts = {};
+          list.forEach(r => {
+            const key = (r.status || '').trim().toLowerCase() || 'idle';
+            counts[key] = (counts[key] || 0) + 1;
+          });
+          const order = ['doing', 'pending', 'hold', 'error', 'done'];
+          const chips = [];
+          order.forEach(k => {
+            if (!counts[k]) return;
+            const m = STATUS_META[k] || { label: k, cls: k };
+            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
+            delete counts[k];
+          });
+          Object.keys(counts).forEach(k => {
+            const m = STATUS_META[k] || { label: k, cls: 'idle' };
+            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
+          });
+          statusEl.className = 'status-counts';
+          statusEl.innerHTML = chips.join('') || '<span class="status-chip idle">暫無</span>';
 
           const shown = list.slice().reverse(); /* 唔限五行，房內 scroll 睇晒 */
           const linesHtml = shown.map(r => {
