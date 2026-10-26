@@ -343,9 +343,25 @@
       text-decoration-thickness: 2px;
       text-decoration-color: #c4b5fd;
     }
+    .progress .meet-kind-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      align-self: flex-start; /* progress is flex column stretch */
+      gap: 5px;
+      margin-bottom: 5px;
+      width: fit-content;
+      max-width: 100%;
+    }
+    .progress .meet-brand {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #5b21b6;
+      letter-spacing: .02em;
+      line-height: 1.2;
+    }
     .progress .meet-kind {
       display: inline-block;
-      align-self: flex-start; /* only the 3 chars — progress is flex column stretch */
       width: fit-content;
       max-width: max-content;
       font-size: 0.82rem;
@@ -355,7 +371,7 @@
       padding: 2px 8px;
       border-radius: 3px;
       border: 1px solid #5b21b6;
-      margin-bottom: 5px;
+      margin: 0;
       letter-spacing: .06em;
       box-shadow: 0 1px 0 rgba(0,0,0,.25);
     }
@@ -832,6 +848,7 @@
         {
           key: 'parse-magnet',
           name: '磁鐵改靚',
+          brandPrefix: 'Parsecreation',
           host: '藍圖官',
           tint: '#a5f3fc',
           vignette: 'meeting-vignette-4.png',
@@ -847,6 +864,7 @@
         {
           key: 'parse-brand',
           name: '品牌網站',
+          brandPrefix: 'Parsecreation',
           host: '藍圖官',
           tint: '#fbcfe8',
           vignette: 'meeting-vignette-3.png',
@@ -996,7 +1014,7 @@
           <div class="room-name">${m.name}</div>
           <span class="status meeting" data-status>會議室</span>
           <div class="progress" data-tasks>
-            <div class="meet-kind">會議室</div>
+            <div class="meet-kind-row">${m.brandPrefix ? `<span class="meet-brand">${m.brandPrefix}</span>` : ''}<div class="meet-kind">會議室</div></div>
             <div class="meet-roster">${meetingRosterHtml(m)}</div>
             <div class="prog-head">最新進度</div>
           </div>
