@@ -169,19 +169,24 @@
       white-space: nowrap;
       line-height: 1.2;
     }
-    /* Status chips: top-right INSIDE dark progress box (Look t921u) */
-    .progress .status-counts {
-      position: absolute;
-      top: 6px;
-      right: 8px;
-      z-index: 4;
+    /* Status chips: OUTSIDE dark box, top-right (Look t922u); meet-kind top-left */
+    .progress-chrome {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      width: 100%;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .progress-wrap .status-counts {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 3px;
       max-width: 58%;
+      margin-left: auto; /* right side of chrome row */
     }
-    .progress .status-counts .status-row {
+    .progress-wrap .status-counts .status-row {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-end;
@@ -311,7 +316,7 @@
       color: #f1f5f9;
       font-size: 0.72rem;
       line-height: 1.4;
-      padding: 28px 10px 8px; /* top-right room for status chips (Look t921u) */
+      padding: 8px 10px;
       border-radius: 4px;
       border: 1px solid rgba(255,255,255,.14);
       overflow: auto;
@@ -321,7 +326,7 @@
       justify-content: flex-start;
       align-items: stretch;
     }
-    /* Meeting: wrap holds absolute band; meet-kind sits outside dark box top-left */
+    /* Wrap holds absolute band; chrome above dark box: meet-kind L + status R (t922u) */
     .progress-wrap {
       position: absolute;
       top: 80px;
@@ -331,7 +336,7 @@
       z-index: 3;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       gap: 4px;
       min-height: 0;
       pointer-events: none;
@@ -350,9 +355,10 @@
       max-height: none;
       z-index: auto;
     }
-    .room:not(.meeting) .progress {
+    .room:not(.meeting) .progress-wrap {
       top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
       bottom: var(--progress-bottom);
+      z-index: 3;
     }
     .progress .meet-roster {
       font-size: 0.7rem;
@@ -387,7 +393,7 @@
     }
     .progress-wrap .meet-kind {
       display: inline-block;
-      align-self: flex-start; /* outside dark box, top-left (Look t921u) */
+      align-self: flex-start; /* outside dark box, top-left (Look t921u/t922u) */
       width: fit-content;
       max-width: max-content;
       font-size: 0.7rem; /* same as .meet-roster / host (Look t911u) */
@@ -1078,9 +1084,11 @@
           </div>
           <div class="room-name">${m.name}</div>
           <div class="progress-wrap" data-progress-wrap>
-            <div class="meet-kind">${m.brandPrefix ? m.brandPrefix + '會議室' : '會議室'}</div>
-            <div class="progress" data-tasks>
+            <div class="progress-chrome">
+              <div class="meet-kind">${m.brandPrefix ? m.brandPrefix + '會議室' : '會議室'}</div>
               <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
+            </div>
+            <div class="progress" data-tasks>
               <div class="meet-roster">${meetingRosterHtml(m)}</div>
               <div class="prog-head">最新進度</div>
               <div data-meet-tasks>（暫無項目）</div>
@@ -1125,11 +1133,15 @@
             <img class="sprite" src="pixel-assets/${b.sprite}?v=${SPRITE_V}" alt="${b.name}" />
             <span class="sprite-tag">${b.name}</span>
           </div>
-          <div class="progress">
-            <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
-            <div data-tasks>
-              <div class="prog-head">最新進度</div>
-              載入任務…
+          <div class="progress-wrap" data-progress-wrap>
+            <div class="progress-chrome">
+              <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
+            </div>
+            <div class="progress">
+              <div data-tasks>
+                <div class="prog-head">最新進度</div>
+                載入任務…
+              </div>
             </div>
           </div>
         `;
