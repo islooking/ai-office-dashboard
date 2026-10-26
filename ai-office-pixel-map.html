@@ -348,15 +348,15 @@
       align-self: flex-start; /* hug label — progress is flex column stretch */
       width: fit-content;
       max-width: max-content;
-      font-size: 0.78rem;
-      font-weight: 900;
+      font-size: 0.7rem; /* same as .meet-roster / host (Look t911u) */
+      font-weight: 800;
       color: #f5f3ff;
       background: #6d28d9;
-      padding: 2px 8px;
+      padding: 1px 6px;
       border-radius: 3px;
       border: 1px solid #5b21b6;
       margin-bottom: 5px;
-      letter-spacing: .04em;
+      letter-spacing: .02em;
       box-shadow: 0 1px 0 rgba(0,0,0,.25);
       white-space: nowrap;
     }
@@ -997,7 +997,7 @@
             <img class="furn furn-plant furn-plant-r" src="pixel-assets/furn-plant.png?v=${FURN_V}" alt="" />
           </div>
           <div class="room-name">${m.name}</div>
-          <span class="status meeting" data-status>會議室</span>
+          <div class="status-counts" data-status><span class="status-chip idle">暫無</span></div>
           <div class="progress" data-tasks>
             <div class="meet-kind">${m.brandPrefix ? m.brandPrefix + '會議室' : '會議室'}</div>
             <div class="meet-roster">${meetingRosterHtml(m)}</div>
@@ -1157,16 +1157,42 @@
           tasksEl.innerHTML = '<div class="prog-head">最新進度</div>' + linesHtml.join('');
         });
 
-        /* Meeting rooms: same Sheet rows, target_bot = room name (抉擇塔／磁鐵改靚／品牌網站) */
+        /* Meeting rooms: same Sheet rows + corner status counts (Look t911u) */
         document.querySelectorAll('.room.meeting[data-meeting-target]').forEach(el => {
           const target = el.dataset.meetingTarget;
           const list = byBot[target] || [];
+          const statusEl = el.querySelector('[data-status]');
           const meetTasks = el.querySelector('[data-meet-tasks]');
-          if (!meetTasks) return;
           if (!list.length) {
-            meetTasks.innerHTML = '（暫無項目）';
+            if (statusEl) {
+              statusEl.className = 'status-counts';
+              statusEl.innerHTML = '<span class="status-chip idle">暫無</span>';
+            }
+            if (meetTasks) meetTasks.innerHTML = '（暫無項目）';
             return;
           }
+          const counts = {};
+          list.forEach(r => {
+            const key = (r.status || '').trim().toLowerCase() || 'idle';
+            counts[key] = (counts[key] || 0) + 1;
+          });
+          const order = ['doing', 'pending', 'hold', 'error', 'done'];
+          const chips = [];
+          order.forEach(k => {
+            if (!counts[k]) return;
+            const m = STATUS_META[k] || { label: k, cls: k };
+            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
+            delete counts[k];
+          });
+          Object.keys(counts).forEach(k => {
+            const m = STATUS_META[k] || { label: k, cls: 'idle' };
+            chips.push(`<span class="status-chip ${m.cls}">${m.label}×${counts[k]}</span>`);
+          });
+          if (statusEl) {
+            statusEl.className = 'status-counts';
+            statusEl.innerHTML = chips.join('') || '<span class="status-chip idle">暫無</span>';
+          }
+          if (!meetTasks) return;
           const shown = list.slice().reverse();
           meetTasks.innerHTML = shown.map(r => {
             const m = STATUS_META[r.status] || { label: r.status || '—', cls: 'idle' };
