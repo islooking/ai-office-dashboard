@@ -177,7 +177,8 @@
       align-items: flex-end; /* meet-kind 同 status 下行同一行 (Look t923u) */
       width: 100%;
       gap: 6px;
-      flex-shrink: 0;
+      flex-shrink: 0; /* ~2 lines status; do not grow (t924u) */
+      max-height: 3rem;
     }
     .progress-wrap .status-counts {
       display: flex;
@@ -305,7 +306,7 @@
     }
     .progress {
       position: absolute;
-      top: 80px; /* default; office overrides below; meetings: filled by .progress-wrap */
+      top: 63px; /* fallback; wrap owns absolute band (t924u) */
       left: 8px;
       right: 8px;
       bottom: 110px;
@@ -327,10 +328,10 @@
       justify-content: flex-start;
       align-items: stretch;
     }
-    /* Wrap holds absolute band; chrome above dark box: meet-kind L + status R (t922u) */
+    /* Wrap holds absolute band; chrome above dark box (t922u); top snug under cabinet (t924u) */
     .progress-wrap {
       position: absolute;
-      top: 80px;
+      top: 63px; /* label-top 56 + gap 7 — no phantom label-h */
       left: 8px;
       right: 8px;
       bottom: 110px;
@@ -357,7 +358,8 @@
       z-index: auto;
     }
     .room:not(.meeting) .progress-wrap {
-      top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
+      /* Chrome in wrap under cabinet foot; no phantom label-h (t924u) */
+      top: calc(var(--label-top) + var(--office-gap));
       bottom: var(--progress-bottom);
       z-index: 3;
     }
@@ -552,7 +554,7 @@
 
     /* Meeting rooms: full width; equal-gap like office top box (Look t885–t888).
        CSS vars = fallback; syncMeetingGaps() sets .progress-wrap top/bottom from
-       label-top band + .meet-name so both gaps = --office-gap (Look t921u). */
+       label-top+gap (no label-h) + .meet-name (Look t924u). */
     .room.meeting {
       grid-column: 1 / -1;
       min-height: 640px; /* dialogue + gap + bottom-pinned square vignette */
@@ -572,7 +574,8 @@
         0 4px 0 rgba(0,0,0,.25);
     }
     .room.meeting .progress-wrap {
-      top: calc(var(--label-top) + var(--label-h) + var(--office-gap));
+      /* Chrome in wrap under cabinet foot; no phantom label-h (t924u) */
+      top: calc(var(--label-top) + var(--office-gap));
       left: 8px;
       right: 8px;
       height: auto;
@@ -1290,8 +1293,8 @@
       }
     }
 
-    /* Meeting progress-wrap: top from fixed label-top band (cabinet foot);
-       bottom from .meet-name. Do NOT measure [data-status] (now inside progress) — Look t921u.
+    /* Meeting progress-wrap: top = label-top + gap only (chrome in wrap; no phantom label-h — t924u);
+       bottom from .meet-name. Do NOT measure [data-status].
        Door-side .room-name is display-only. CSS bottom formula is fallback only. */
     function meetingGapPx(room) {
       const raw = getComputedStyle(room).getPropertyValue('--office-gap').trim();
@@ -1309,9 +1312,8 @@
         if (roomRect.height < 40) return;
         const cs = getComputedStyle(room);
         const labelTop = parseFloat(cs.getPropertyValue('--label-top')) || 56;
-        const labelH = parseFloat(cs.getPropertyValue('--label-h')) || 17;
-        /* Fixed cabinet-foot band — same visual band status used to occupy */
-        let topPx = Math.max(0, labelTop + labelH + gap);
+        /* Chrome lives in wrap — no +labelH phantom empty floor (t924u) */
+        let topPx = Math.max(0, labelTop + gap);
         let nameTop = Infinity;
         names.forEach(n => {
           const r = n.getBoundingClientRect();
