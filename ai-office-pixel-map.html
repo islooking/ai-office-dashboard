@@ -345,6 +345,9 @@
     }
     .progress .meet-kind {
       display: inline-block;
+      align-self: flex-start; /* only the 3 chars — progress is flex column stretch */
+      width: fit-content;
+      max-width: max-content;
       font-size: 0.82rem;
       font-weight: 900;
       color: #f5f3ff;
