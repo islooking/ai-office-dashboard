@@ -451,71 +451,99 @@
       font-size: 0.64rem;
     }
 
-    /* Usage strip above 抉擇塔 (Look t890u) */
+    /* Usage strip above 抉擇塔 — pixel campus panel (Look t890u／t936u) */
     .usage-bar {
       grid-column: 1 / -1;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 12px 14px;
+      position: relative;
+      background:
+        linear-gradient(180deg, var(--wall-light) 0 10px, var(--wall) 10px 28px, var(--wall-dark) 28px 32px),
+        #1a2332;
+      background-repeat: no-repeat;
+      background-size: 100% 32px, 100% 100%;
+      border: 3px solid var(--wall-dark);
+      border-radius: 2px;
+      padding: 38px 12px 10px;
       color: #e2e8f0;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.22),
+        0 4px 0 rgba(0,0,0,.25);
     }
-    .usage-bar h2 {
-      margin: 0 0 10px;
-      font-size: 0.86rem;
-      color: #7dd3fc;
+    .usage-bar .usage-title {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      z-index: 2;
+      background: rgba(15,23,42,.82);
+      color: #f8fafc;
+      font-size: 0.72rem;
       font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,.16);
+      letter-spacing: .02em;
     }
-    .usage-bar h2 span {
-      font-size: 0.68rem;
-      color: #64748b;
+    .usage-bar .usage-title span {
+      font-size: 0.62rem;
+      color: #94a3b8;
       font-weight: 400;
       margin-left: 6px;
+    }
+    .usage-bar .usage-body {
+      background: rgba(15,23,42,.55);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 2px;
+      padding: 10px 10px 8px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
     }
     .usage-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px 18px;
+      gap: 12px 16px;
     }
     @media (max-width: 720px) {
       .usage-grid { grid-template-columns: 1fr; }
     }
     .usage-block .usage-label {
-      font-size: 0.72rem;
-      color: #94a3b8;
+      font-size: 0.7rem;
+      color: #cbd5e1;
+      font-weight: 700;
       margin-bottom: 4px;
+      letter-spacing: .04em;
     }
     .usage-block .usage-row {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       gap: 8px;
     }
     .usage-block .usage-pct {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 700;
+      color: #f8fafc;
     }
     .usage-block .usage-pct em {
       font-style: normal;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 400;
       color: #94a3b8;
       margin-left: 4px;
     }
     .usage-block .usage-reset {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: #94a3b8;
       white-space: nowrap;
     }
     .usage-meter {
-      background: #334155;
-      height: 8px;
-      border-radius: 4px;
+      background: #0f172a;
+      height: 12px;
+      border-radius: 2px;
       overflow: hidden;
       display: flex;
       flex-direction: row;
       align-items: stretch;
+      border: 2px solid #334155;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
     .usage-meter > i {
       display: block;
@@ -523,6 +551,7 @@
       flex: 0 0 auto;
       width: 0%;
       background: #60a5fa;
+      border-radius: 0;
     }
     .usage-meter > i.seg-imagine { background: #60a5fa; }
     .usage-meter > i.seg-builder { background: #3b82f6; }
@@ -531,9 +560,9 @@
     .usage-meter > i.hot { background: #f87171; }
     .usage-chips {
       margin-top: 6px;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: #94a3b8;
-      line-height: 1.4;
+      line-height: 1.45;
     }
     .usage-chips .dot { font-weight: 600; }
     .usage-chips .dot-imagine { color: #60a5fa; }
@@ -541,11 +570,130 @@
     .usage-chips .dot-chat { color: #1d4ed8; }
     .usage-footer {
       margin: 8px 0 0;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       color: #64748b;
     }
     .usage-bar .usage-err { color: #f87171; font-size: 0.8rem; margin: 0; }
     .usage-bar .usage-muted { color: #94a3b8; font-size: 0.8rem; margin: 0; }
+
+    /* Bottom routine board — Habbo ticket／chalkboard (Look t935u Option A) */
+    .routine-board {
+      grid-column: 1 / -1;
+      position: relative;
+      background:
+        linear-gradient(180deg, var(--wall-light) 0 10px, var(--wall) 10px 28px, var(--wall-dark) 28px 32px),
+        #1a2332;
+      background-repeat: no-repeat;
+      background-size: 100% 32px, 100% 100%;
+      border: 3px solid var(--wall-dark);
+      border-radius: 2px;
+      padding: 38px 10px 10px;
+      color: #e2e8f0;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.22),
+        0 4px 0 rgba(0,0,0,.25);
+    }
+    .routine-board .routine-title {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      z-index: 2;
+      background: rgba(15,23,42,.82);
+      color: #f8fafc;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,.16);
+    }
+    .routine-board .routine-title span {
+      font-size: 0.62rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+    .routine-board .routine-body {
+      background: rgba(15,23,42,.62);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 2px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .routine-row {
+      display: grid;
+      grid-template-columns: 28px minmax(64px, 88px) minmax(120px, 1.4fr) minmax(110px, 1fr) auto;
+      gap: 8px 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(148,163,184,.14);
+      cursor: pointer;
+      min-width: 520px;
+      transition: background .1s ease;
+    }
+    .routine-row:last-child { border-bottom: none; }
+    .routine-row:hover { background: rgba(148,163,184,.1); }
+    .routine-row .rt-sprite {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(1px 1px 0 rgba(0,0,0,.25));
+    }
+    .routine-row .rt-bot {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .routine-row .rt-name {
+      font-size: 0.72rem;
+      color: #f1f5f9;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .routine-row .rt-sched {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .routine-row .rt-pill {
+      font-size: 0.66rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,.12);
+      white-space: nowrap;
+      justify-self: end;
+    }
+    .routine-row .rt-pill.enabled {
+      background: #4ade80;
+      color: #14532d;
+    }
+    .routine-row .rt-pill.paused {
+      background: #fb923c;
+      color: #7c2d12;
+    }
+    .routine-empty {
+      padding: 12px 10px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 0;
+    }
+    @media (max-width: 520px) {
+      .routine-row {
+        grid-template-columns: 28px minmax(56px, 72px) minmax(100px, 1.2fr) minmax(96px, 1fr) auto;
+        gap: 6px 8px;
+        padding: 7px 8px;
+        min-width: 460px;
+      }
+    }
 
     .note {
       max-width: 980px; margin: 0 auto 40px; padding: 0 16px;
@@ -900,6 +1048,20 @@
       { name: '鑄造使', wingLabel: '鑄造院', sprite: 'forge-desk.png', id: '526b2d9a-cf70-43f6-8bd3-2cc2c812f1e9', tint: '#fdba74' }
     ];
 
+    /* Seeded campus routines board (Look t935u Option A) — Asia/Hong_Kong */
+    const ROUTINES = [
+      { bot: '智子', name: '每日 xAI／Grok 用量入簿', schedule: '每日約 09:00', status: 'enabled' },
+      { bot: '智子', name: '虛擬抄股', schedule: '每晚第二日訊號', status: 'paused' },
+      { bot: '起居執事', name: 'Look 生活日誌三日備份', schedule: '每 3 日', status: 'enabled' },
+      { bot: '起居執事', name: '生活日誌 Word 月備', schedule: '每月 1 號 09:12', status: 'enabled' },
+      { bot: '郵務官', name: '郵件 digest', schedule: '每日 12:00', status: 'enabled' },
+      { bot: '郵務官', name: '郵件 digest', schedule: '每日 21:00', status: 'enabled' },
+      { bot: '首席煉金師', name: '虛擬抄股晚報', schedule: '每日約 21:00', status: 'enabled' },
+      { bot: '刑事專員', name: '香港刑案學習報告', schedule: '每日 06:30', status: 'paused' },
+      { bot: '醫療官', name: '媽媽血壓每週入簿', schedule: '每週一 08:10', status: 'enabled' },
+      { bot: '醫療官', name: 'Mounjaro 下一劑提醒', schedule: '2026-10-29 13:09（one-shot）', status: 'enabled' }
+    ];
+
     /* Meeting rooms: same bot may appear in office + each meeting they belong to.
        seat: composed seated+chair sprite base (append -s / -n by side). */
     /* Size standard = bottom room 磁鐵改靚. Oval at frame bottom; MEETING_TABLE locked; tags beside sprites. */
@@ -1160,7 +1322,7 @@
       const usage = document.createElement('div');
       usage.className = 'usage-bar';
       usage.id = 'usageBar';
-      usage.innerHTML = '<h2>使用情況<span>Sheet 驅動</span></h2><p class="usage-muted">載入用量中...</p>';
+      usage.innerHTML = '<div class="usage-title">使用情況<span>Sheet</span></div><div class="usage-body"><p class="usage-muted">載入用量中...</p></div>';
       root.appendChild(usage);
 
       /* 1) 抉擇塔 above all individual rooms */
@@ -1187,6 +1349,49 @@
       wingBot.textContent = '會議室';
       root.appendChild(wingBot);
       MEETINGS.bottom.forEach(m => appendMeeting(root, m));
+
+      /* 4) Campus-level routine schedule board (Look t935u Option A) */
+      const wingR = document.createElement('div');
+      wingR.className = 'wing';
+      wingR.textContent = '排程 · Routines';
+      root.appendChild(wingR);
+      const board = document.createElement('div');
+      board.className = 'routine-board';
+      board.id = 'routineBoard';
+      board.innerHTML = '<div class="routine-title">排程板<span>Routines</span></div><div class="routine-body" data-routine-body></div>';
+      root.appendChild(board);
+    }
+
+    function renderRoutineBoard() {
+      const body = document.querySelector('#routineBoard [data-routine-body]');
+      if (!body) return;
+      const byName = {};
+      BOTS.forEach(b => { byName[b.name] = b; });
+      if (!ROUTINES.length) {
+        body.innerHTML = '<p class="routine-empty">暫無排程</p>';
+        return;
+      }
+      body.innerHTML = ROUTINES.map(r => {
+        const bot = byName[r.bot];
+        const sprite = (r.sprite || (bot && bot.sprite) || 'zhizi-desk.png');
+        const pillCls = r.status === 'paused' ? 'paused' : 'enabled';
+        const pillLabel = r.status === 'paused' ? '暫停' : '開';
+        const idAttr = bot && bot.id ? ` data-agent-id="${bot.id}"` : '';
+        return `<div class="routine-row"${idAttr} role="button" tabindex="0">
+          <img class="rt-sprite" src="pixel-assets/${sprite}" alt="" width="28" height="28" />
+          <span class="rt-bot">${r.bot}</span>
+          <span class="rt-name">${r.name}</span>
+          <span class="rt-sched">${r.schedule}</span>
+          <span class="rt-pill ${pillCls}">${pillLabel}</span>
+        </div>`;
+      }).join('');
+      body.querySelectorAll('.routine-row[data-agent-id]').forEach(row => {
+        const open = () => { location.href = 'grokbot://app/v1/agent?id=' + row.dataset.agentId; };
+        row.addEventListener('click', open);
+        row.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+        });
+      });
     }
 
     async function loadSheet() {
@@ -1362,7 +1567,7 @@
         const csv = await res.text();
         const lines = csv.trim().split(/\r?\n/).filter(Boolean);
         if (lines.length < 2) {
-          el.innerHTML = '<h2>使用情況<span>Sheet 驅動</span></h2><p class="usage-muted">暫無用量記錄</p>';
+          el.innerHTML = '<div class="usage-title">使用情況<span>Sheet</span></div><div class="usage-body"><p class="usage-muted">暫無用量記錄</p></div>';
           return;
         }
         const cols = parseCsvLine(lines[lines.length - 1]).map(c => c.replace(/^"|"$/g, ''));
@@ -1373,42 +1578,45 @@
         const chat = Number(cols[7]) || 0;
         const botCls = usageFillClass(bot);
         el.innerHTML = `
-          <h2>使用情況<span>Sheet 驅動</span></h2>
-          <div class="usage-grid">
-            <div class="usage-block">
-              <div class="usage-label">每週 SuperGrok Plus</div>
-              <div class="usage-row">
-                <div class="usage-pct">${sg}%<em>已使用</em></div>
-                <div class="usage-reset">重設 ${cols[2] || '—'}</div>
+          <div class="usage-title">使用情況<span>Sheet</span></div>
+          <div class="usage-body">
+            <div class="usage-grid">
+              <div class="usage-block">
+                <div class="usage-label">每週 SuperGrok Plus</div>
+                <div class="usage-row">
+                  <div class="usage-pct">${sg}%<em>已使用</em></div>
+                  <div class="usage-reset">重設 ${cols[2] || '—'}</div>
+                </div>
+                <div class="usage-meter" aria-label="SuperGrok Plus 分段用量">
+                  <i class="seg-imagine" style="width:${Math.min(100, imagine)}%"></i>
+                  <i class="seg-builder" style="width:${Math.min(100, builder)}%"></i>
+                  <i class="seg-chat" style="width:${Math.min(100, chat)}%"></i>
+                </div>
+                <div class="usage-chips">
+                  <span class="dot dot-imagine">●</span> Imagine ${imagine}%　
+                  <span class="dot dot-builder">●</span> App Builder ${builder}%　
+                  <span class="dot dot-chat">●</span> 對話 ${chat}%
+                </div>
               </div>
-              <div class="usage-meter" aria-label="SuperGrok Plus 分段用量">
-                <i class="seg-imagine" style="width:${Math.min(100, imagine)}%"></i>
-                <i class="seg-builder" style="width:${Math.min(100, builder)}%"></i>
-                <i class="seg-chat" style="width:${Math.min(100, chat)}%"></i>
-              </div>
-              <div class="usage-chips">
-                <span class="dot dot-imagine">●</span> Imagine ${imagine}%　
-                <span class="dot dot-builder">●</span> App Builder ${builder}%　
-                <span class="dot dot-chat">●</span> 對話 ${chat}%
+              <div class="usage-block">
+                <div class="usage-label">每週 Grok Bot</div>
+                <div class="usage-row">
+                  <div class="usage-pct">${bot}%<em>已使用</em></div>
+                  <div class="usage-reset">重設 ${cols[4] || '—'}</div>
+                </div>
+                <div class="usage-meter"><i class="${botCls}" style="width:${Math.min(100, Number(bot) || 0)}%"></i></div>
               </div>
             </div>
-            <div class="usage-block">
-              <div class="usage-label">每週 Grok Bot</div>
-              <div class="usage-row">
-                <div class="usage-pct">${bot}%<em>已使用</em></div>
-                <div class="usage-reset">重設 ${cols[4] || '—'}</div>
-              </div>
-              <div class="usage-meter"><i class="${botCls}" style="width:${Math.min(100, Number(bot) || 0)}%"></i></div>
-            </div>
+            <p class="usage-footer">最後更新：${cols[0] || '—'}</p>
           </div>
-          <p class="usage-footer">最後更新：${cols[0] || '—'}</p>
         `;
       } catch (e) {
-        el.innerHTML = '<h2>使用情況<span>Sheet 驅動</span></h2><p class="usage-err">讀取用量失敗（確認 Sheet 公開／Anyone with link）</p>';
+        el.innerHTML = '<div class="usage-title">使用情況<span>Sheet</span></div><div class="usage-body"><p class="usage-err">讀取用量失敗（確認 Sheet 公開／Anyone with link）</p></div>';
       }
     }
 
     buildCampus();
+    renderRoutineBoard();
     scheduleMeetingGaps();
     loadSheet();
     loadUsage();
