@@ -980,8 +980,8 @@
   <div class="local-only-banner" id="localOnlyBanner" hidden>公開 Pages 已停餵私人 Sheet · 本地版請用 OneDrive／堅果雲 12_Phone_Dashboards/01_AI_Office</div>
   <header>
     <h1>魔法學院｜AI 辦公室像素地圖</h1>
-    <p>每房一個 bot · 狀態同任務由 Dashboard_Tasks live 餵入 · 可 scroll 睇晒所有任務</p>
-    <div class="badge">LIVE · Sheet 驅動</div>
+    <p>公開 Pages 示範地圖 · 無個人排程／任務（真資料只喺本地 OneDrive Phone Dashboard）</p>
+    <div class="badge">DEMO · 無個人排程</div>
     <div class="links">
       <a href="ai-office-dashboard-prototype.html">卡片 Dashboard</a>
       <a href="ai-office-pixel-prototype.html">3 房原型</a>
@@ -1058,19 +1058,8 @@
       { name: '鑄造使', wingLabel: '鑄造院', sprite: 'forge-desk.png', id: '526b2d9a-cf70-43f6-8bd3-2cc2c812f1e9', tint: '#fdba74' }
     ];
 
-    /* Seeded campus routines board (Look t935u Option A) — Asia/Hong_Kong */
-    const ROUTINES = [
-      { bot: '智子', name: '每日 xAI／Grok 用量入簿', schedule: '每日約 09:00', status: 'enabled' },
-      { bot: '智子', name: '虛擬抄股', schedule: '每晚第二日訊號', status: 'paused' },
-      { bot: '起居執事', name: 'Look 生活日誌三日備份', schedule: '每 3 日', status: 'enabled' },
-      { bot: '起居執事', name: '生活日誌 Word 月備', schedule: '每月 1 號 09:12', status: 'enabled' },
-      { bot: '郵務官', name: '郵件 digest', schedule: '每日 12:00', status: 'enabled' },
-      { bot: '郵務官', name: '郵件 digest', schedule: '每日 21:00', status: 'enabled' },
-      { bot: '首席煉金師', name: '虛擬抄股晚報', schedule: '每日約 21:00', status: 'enabled' },
-      { bot: '刑事專員', name: '香港刑案學習報告', schedule: '每日 06:30', status: 'paused' },
-      { bot: '醫療官', name: '媽媽血壓每週入簿', schedule: '每週一 08:10', status: 'enabled' },
-      { bot: '醫療官', name: 'Mounjaro 下一劑提醒', schedule: '2026-10-29 13:09（one-shot）', status: 'enabled' }
-    ];
+    /* public Pages demo — no personal schedules; live routines only in local OD Phone Dashboard HTML */
+    const ROUTINES = [];
 
     /* Meeting rooms: same bot may appear in office + each meeting they belong to.
        seat: composed seated+chair sprite base (append -s / -n by side). */
@@ -1486,7 +1475,7 @@
         const ban = document.getElementById('localOnlyBanner');
         if (ban) ban.hidden = false;
         const badge = document.querySelector('header .badge');
-        if (badge) badge.textContent = 'DEMO · 無私人資料';
+        if (badge) badge.textContent = 'DEMO · 無個人排程';
         applyTaskRows(DEMO_TASK_ROWS);
         return;
       }
